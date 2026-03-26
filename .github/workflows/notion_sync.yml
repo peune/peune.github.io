@@ -17,11 +17,11 @@ jobs:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         with:
-          output_path: 'posts' # Change this to your blog's post directory
+          output_path: '_posts' # Change this to your blog's post directory
           filename_property: 'slug' # Uses the Slug column for the filename
 
       - name: Commit and Push changes
         uses: EndBug/add-and-commit@v9
         with:
           message: 'New post from Notion'
-          add: 'posts/*.md'
+          add: '_posts/*.md'
