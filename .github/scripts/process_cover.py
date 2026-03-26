@@ -54,10 +54,10 @@ def process_unsynced_posts():
             if cover:
                 img_url = cover.get("file", {}).get("url") or cover.get("external", {}).get("url")
                 img_name = f"{slug}-cover.jpg"
-                os.makedirs("assets/images", exist_ok=True)
+                os.makedirs("img", exist_ok=True)
                 
                 img_data = requests.get(img_url).content
-                with open(f"assets/images/{img_name}", 'wb') as f:
+                with open(f"img/{img_name}", 'wb') as f:
                     f.write(img_data)
                 
                 # Inject image path into Frontmatter
@@ -65,7 +65,7 @@ def process_unsynced_posts():
                     content = f.read()
                     if "image:" not in content:
                         f.seek(0, 0)
-                        f.write(f"---\nimage: /assets/images/{img_name}\n" + content)
+                        f.write(f"---\nimage: /img/{img_name}\n" + content)
 
             # 4. HANDSHAKE: Update Notion to set Synced = True
             update_url = f"https://api.notion.com/v1/pages/{page_id}"
