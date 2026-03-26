@@ -1,0 +1,27 @@
+name: Notion to Markdown Sync
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+  workflow_dispatch: # Allows you to run it manually
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: convert notion to markdown
+        uses: ega4432/notion-to-markdown-action@v0
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        with:
+          output_path: 'posts' # Change this to your blog's post directory
+          filename_property: 'Slug' # Uses the Slug column for the filename
+
+      - name: Commit and Push changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'New post from Notion'
+          add: 'posts/*.md'
