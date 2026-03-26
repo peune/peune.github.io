@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: convert notion to markdown
-        uses: ega4432/notion-to-markdown-action@v0
+        uses: ega4432/notion-to-markdown-action@v1
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
