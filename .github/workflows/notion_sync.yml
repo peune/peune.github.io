@@ -11,36 +11,30 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Debug Notion Properties
-        run: |
-          curl -X POST 'https://api.notion.com/v1/databases/${{ secrets.NOTION_DATABASE_ID }}/query' \
-            -H 'Authorization: Bearer ${{ secrets.NOTION_API_KEY }}' \
-            -H 'Notion-Version: 2022-06-28' \
-            -H 'Content-Type: application/json'
-
       - name: convert notion to markdown
         uses: ega4432/notion-to-markdown-action@v0
+        with:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          output_path: '_posts'
+          filename_property: 'slug' # We start with just the slug, Python fixes it
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Process Date and Cover
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        with:
-          output_path: '_posts' # Change this to your blog's post directory
-          filename_property: 'slug' # Uses the Slug column for the filename
+        run: python .github/scripts/process_cover.py
 
-      - name: Prepend Date to Filename
-        run: |
-          DATE=$(date +%Y-%m-%d)
-          cd _posts
-          for f in *.md; do
-            # Only rename if the file doesn't already start with a date (prevents double dating)
-            if [[ ! $f =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]]; then
-              mv "$f" "${DATE}-${f}"
-              echo "Renamed $f to ${DATE}-${f}"
-            fi
-          done
-
-      - name: Commit and Push changes
+      - name: Commit and Push
         uses: EndBug/add-and-commit@v9
         with:
-          message: 'New post from Notion'
-          add: '_posts/*.md'
+          add: "[ '_posts/*.md', 'img/*' ]"
+          message: "Published post from Notion with custom date and cover"
