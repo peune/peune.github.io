@@ -2,7 +2,7 @@ name: Notion to Markdown Sync
 on:
   schedule:
     - cron: '0 * * * *' # Runs every hour
-  workflow_dispatch: # Allows you to run it manually
+  workflow_dispatch:
 
 jobs:
   import:
@@ -11,16 +11,61 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: convert notion to markdown
-        uses: ega4432/notion-to-markdown-action@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Notion SDK
+        run: npm install @notionhq/client notion-to-md
+
+      - name: Export Notion DB to Markdown
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        with:
-          output_path: 'posts' # Change this to your blog's post directory
-          filename_property: 'Slug' # Uses the Slug column for the filename
+        run: |
+          node << 'EOF'
+          const { Client } = require("@notionhq/client");
+          const { NotionToMarkdown } = require("notion-to-md");
+          const fs = require("fs");
+          const path = require("path");
 
-      - name: Commit and Push changes
+          const notion = new Client({ auth: process.env.NOTION_API_KEY });
+          const n2m = new NotionToMarkdown({ notionClient: notion });
+
+          async function main() {
+            const outputDir = "posts";
+            if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+            const response = await notion.databases.query({
+              database_id: process.env.NOTION_DATABASE_ID,
+            });
+
+            for (const page of response.results) {
+              // Get slug from the Slug property
+              const slugProp = page.properties?.Slug;
+              let slug = page.id; // fallback to page ID
+
+              if (slugProp?.type === "rich_text" && slugProp.rich_text.length > 0) {
+                slug = slugProp.rich_text[0].plain_text;
+              } else if (slugProp?.type === "title" && slugProp.title.length > 0) {
+                slug = slugProp.title[0].plain_text;
+              }
+
+              const mdBlocks = await n2m.pageToMarkdown(page.id);
+              const mdString = n2m.toMarkdownString(mdBlocks);
+              const content = mdString.parent || mdString;
+
+              const filePath = path.join(outputDir, `${slug}.md`);
+              fs.writeFileSync(filePath, content, "utf8");
+              console.log(`Written: ${filePath}`);
+            }
+          }
+
+          main().catch(err => { console.error(err); process.exit(1); });
+          EOF
+
+      - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
           message: 'New post from Notion'
