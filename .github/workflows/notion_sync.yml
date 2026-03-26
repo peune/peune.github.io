@@ -18,7 +18,7 @@ jobs:
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         with:
           output_path: 'posts' # Change this to your blog's post directory
-          filename_property: 'Slug' # Uses the Slug column for the filename
+          filename_property: 'slug' # Uses the Slug column for the filename
 
       - name: Commit and Push changes
         uses: EndBug/add-and-commit@v9
