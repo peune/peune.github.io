@@ -60,7 +60,7 @@ def blocks_to_markdown(blocks):
                 lines.append(text)
     return "\n\n".join(lines)
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 def get_cover(page, page_id, img_dir):
     """Download page cover and return relative path"""
