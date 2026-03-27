@@ -136,13 +136,16 @@ for page in pages:
 
     # Get cover
     cover_path = get_cover(page, page_id, img_dir)
-  
+    if cover_path:
+        image_line = f"\nimage:\n  path: /{cover_path}\n  alt: {title}"
+    else:
+        image_line = ""
+    
     # Build frontmatter
-    cover_line = f"\ncover: /{cover_path}" if cover_path else ""
     frontmatter = f"""---
 title: {title}
 date: {date}
-slug: {slug}{cover_line}
+slug: {slug}{image_line}
 ---"""
 
     # Get content blocks
