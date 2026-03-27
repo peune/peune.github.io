@@ -35,8 +35,6 @@ jobs:
         with:
           NOTION_SECRET: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE: ${{ secrets.NOTION_DATABASE_ID }}
-          FILTER_PROP: ToSync          #
-          FILTER_VALUES: true          # ← checkbox = true
           CONVERT_PROP_CASE: snake
           ARTICLE_PATH: _posts/{slug}.md  # temp name, Python will rename
           ASSETS_PATH: ./img/
