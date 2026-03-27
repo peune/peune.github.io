@@ -60,6 +60,8 @@ def blocks_to_markdown(blocks):
                 lines.append(text)
     return "\n\n".join(lines)
 
+from PIL import Image
+
 def get_cover(page, page_id, img_dir):
     """Download page cover and return relative path"""
     cover = page.get("cover")
@@ -83,6 +85,11 @@ def get_cover(page, page_id, img_dir):
         response = requests.get(url)
         response.raise_for_status()
         img_path.write_bytes(response.content)
+
+        # Resize to fit Chirpy-Jekyll
+        with PILImage.open(img_path) as img:
+            resized = img.resize((1200, 630), PILImage.LANCZOS)
+            resized.save(img_path)
         print(f"Downloaded cover: {img_path}")
     
     return str(img_path)
