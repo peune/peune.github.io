@@ -116,6 +116,9 @@ def mark_synced(page_id):
 posts_dir = Path("_posts")
 posts_dir.mkdir(exist_ok=True)
 
+img_dir = Path("img")
+img_dir.mkdir(exist_ok=True)
+
 pages = query_pages()
 print(f"Found {len(pages)} pages to sync")
 
