@@ -88,7 +88,7 @@ def get_cover(page, page_id, img_dir):
 
         # Resize to fit Chirpy-Jekyll
         with Image.open(img_path) as img:
-            resized = img.resize((1200, 630), PILImage.LANCZOS)
+            resized = img.resize((1200, 630), Image.LANCZOS)
             resized.save(img_path)
         print(f"Downloaded cover: {img_path}")
     
