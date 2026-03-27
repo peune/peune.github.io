@@ -30,20 +30,24 @@ jobs:
       - name: Install dependencies
         run: pip install requests
         
-      - name: convert notion to markdown
-        uses: ega4432/notion-to-markdown-action@v0
+      - name: Sync Notion to Markdown
+        uses: victornpb/notion-jam@v0.0.13
         with:
-          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-          output_path: '_posts'
-          filename_property: 'slug' # We start with just the slug, Python fixes it
-
-      - name: Process Date and Cover
+          NOTION_SECRET: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE: ${{ secrets.NOTION_DATABASE_ID }}
+          FILTER_PROP: ToSync          #
+          FILTER_VALUES: true          # ← checkbox = true
+          CONVERT_PROP_CASE: snake
+          ARTICLE_PATH: _posts/{slug}.md  # temp name, Python will rename
+          ASSETS_PATH: ./img/
+          DOWNLOAD_FRONTMATTER_IMAGES: true
+      
+      - name: Process Date, Cover, and Synced filter
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         run: python .github/scripts/process_cover.py
-
+        
       - name: Commit and Push
         uses: EndBug/add-and-commit@v9
         with:
