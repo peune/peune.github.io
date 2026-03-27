@@ -80,35 +80,35 @@ def get_cover(page, page_id, img_dir):
     img_dir.mkdir(parents=True, exist_ok=True)
     ext = url.split("?")[0].split(".")[-1]  # strip query params first
     img_path = img_dir / f"{page_id}_cover.{ext}"
-    
-    if not img_path.exists():
-        response = requests.get(url)
-        response.raise_for_status()
-        img_path.write_bytes(response.content)
 
-        # Resize to fit Chirpy-Jekyll
-        with Image.open(img_path) as img:
-            
-            # Step 1: Resize width to 1200, keep aspect ratio
-            target_width = 1200
-            ratio = target_width / img.width
-            new_height = int(img.height * ratio)
-            resized = img.resize((target_width, new_height), PILImage.LANCZOS)
-    
-            # Step 2: Pad vertically to 630px with white
-            target_height = 630
+    # Always download image just in case we want new version
+    response = requests.get(url)
+    response.raise_for_status()
+    img_path.write_bytes(response.content)
+
+    # Resize to fit Chirpy-Jekyll
+    with Image.open(img_path) as img:
+        
+        # Step 1: Resize width to 1200, keep aspect ratio
+        target_width = 1200
+        ratio = target_width / img.width
+        new_height = int(img.height * ratio)
+        resized = img.resize((target_width, new_height), PILImage.LANCZOS)
+
+        # Step 2: Pad vertically to 630px with white
+        target_height = 630
+        pad_top = (target_height - new_height) // 2
+        pad_bottom = target_height - new_height - pad_top
+
+        if new_height > target_height:
+            # Fallback: crop center instead of padding
+            padded = ImageOps.fit(resized, (target_width, target_height), PILImage.LANCZOS)
+        else:
             pad_top = (target_height - new_height) // 2
             pad_bottom = target_height - new_height - pad_top
+            padded = ImageOps.expand(resized, border=(0, pad_top, 0, pad_bottom), fill="white")
 
-            if new_height > target_height:
-                # Fallback: crop center instead of padding
-                padded = ImageOps.fit(resized, (target_width, target_height), PILImage.LANCZOS)
-            else:
-                pad_top = (target_height - new_height) // 2
-                pad_bottom = target_height - new_height - pad_top
-                padded = ImageOps.expand(resized, border=(0, pad_top, 0, pad_bottom), fill="white")
-    
-            padded.save(img_path)
+        padded.save(img_path)
 
         
         print(f"Downloaded cover: {img_path}")
