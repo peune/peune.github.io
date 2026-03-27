@@ -14,15 +14,16 @@ for md_file in posts_dir.glob("*.md"):
         continue
     fm = fm_match.group(1)
     
-    # Skip if already synced
-    if re.search(r"^synced:\s*true", fm, re.MULTILINE):
-        md_file.unlink()  # remove it, don't publish
-        print(f"Skipping (already synced): {md_file.name}")
+    # Remove pages where ToSync is not checked
+    if not re.search(r"^to_sync:\s*true", fm, re.MULTILINE):
+        md_file.unlink()
+        print(f"Skipping: {md_file.name}")
         continue
     
     # Extract date and slug for renaming
     date_match = re.search(r"^date:\s*(\d{4}-\d{2}-\d{2})", fm, re.MULTILINE)
     slug_match = re.search(r"^slug:\s*(.+)", fm, re.MULTILINE)
+    id_match = re.search(r"^id:\s*(.+)", fm, re.MULTILINE)
     
     if date_match and slug_match:
         date = date_match.group(1)
@@ -32,10 +33,8 @@ for md_file in posts_dir.glob("*.md"):
         print(f"Renamed: {md_file.name} → {new_name.name}")
 
     # Set flag ToSync to false 
-    id_match = re.search(r"^id:\s*(.+)", fm, re.MULTILINE)
-    page_id = id_match.group(1).strip() if id_match else None
-
-    if page_id:
+    if id_match:
+        page_id = id_match.group(1).strip()
         requests.patch(
             f"https://api.notion.com/v1/pages/{page_id}",
             headers={
