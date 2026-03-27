@@ -88,8 +88,29 @@ def get_cover(page, page_id, img_dir):
 
         # Resize to fit Chirpy-Jekyll
         with Image.open(img_path) as img:
-            resized = img.resize((1200, 630), Image.LANCZOS)
-            resized.save(img_path)
+            
+            # Step 1: Resize width to 1200, keep aspect ratio
+            target_width = 1200
+            ratio = target_width / img.width
+            new_height = int(img.height * ratio)
+            resized = img.resize((target_width, new_height), PILImage.LANCZOS)
+    
+            # Step 2: Pad vertically to 630px with white
+            target_height = 630
+            pad_top = (target_height - new_height) // 2
+            pad_bottom = target_height - new_height - pad_top
+
+            if new_height > target_height:
+                # Fallback: crop center instead of padding
+                padded = ImageOps.fit(resized, (target_width, target_height), PILImage.LANCZOS)
+            else:
+                pad_top = (target_height - new_height) // 2
+                pad_bottom = target_height - new_height - pad_top
+                padded = ImageOps.expand(resized, border=(0, pad_top, 0, pad_bottom), fill="white")
+    
+            padded.save(img_path)
+
+        
         print(f"Downloaded cover: {img_path}")
     
     return str(img_path)
