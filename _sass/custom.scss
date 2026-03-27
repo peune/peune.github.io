@@ -1,0 +1,7 @@
+/* Override Chirpy cover image cropping */
+.post img[data-src],
+img.post-cover,
+.card-img-top {
+  object-fit: contain !important;
+  background: var(--main-bg);
+}
