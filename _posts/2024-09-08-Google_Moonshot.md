@@ -2,7 +2,9 @@
 title: 
 date: 2024-09-08
 slug: Google_Moonshot
-cover: /img/18a64f06-6e5a-4570-98b5-b761015ff67e_cover.png
+image:
+  path: /img/18a64f06-6e5a-4570-98b5-b761015ff67e_cover.png
+  alt: 
 ---
 
 วันก่อนนั่งฟัง Landing Moonshots with Google’s Innovation Chief Dr. Astro Teller | A Bit of Optimism Podcast ตอนขับรถแล้วชอบ ต้องจดกันลืมหน่อย
