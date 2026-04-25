@@ -182,7 +182,8 @@ slug: {slug}{image_line}
     body = blocks_to_markdown(blocks)
 
     # Write file
-    filename = posts_dir / f"{date}-{slug}.md"
+    safe_slug = slug.replace(' ', '-')
+    filename = posts_dir / f"{date}-{safe_slug}.md"
     filename.write_text(f"{frontmatter}\n\n{body}\n")
     print(f"Written: {filename}")
 
