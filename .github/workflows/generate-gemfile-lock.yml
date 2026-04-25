@@ -2,9 +2,6 @@ name: Generate Gemfile.lock
 
 on:
   workflow_dispatch
-  # Uncomment to run on schedule (e.g., weekly)
-  # schedule:
-  #   - cron: '0 0 * * 0'
 
 jobs:
   generate:
