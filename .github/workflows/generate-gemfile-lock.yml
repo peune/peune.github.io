@@ -1,0 +1,29 @@
+name: Generate Gemfile.lock
+
+on:
+  workflow_dispatch
+  # Uncomment to run on schedule (e.g., weekly)
+  # schedule:
+  #   - cron: '0 0 * * 0'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: false
+
+      - name: Generate Gemfile.lock
+        run: bundle lock --no-update
+
+      - name: Commit and Push
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "Gemfile.lock"
+          message: "Generate Gemfile.lock for reproducible builds"
