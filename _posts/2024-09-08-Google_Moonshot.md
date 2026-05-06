@@ -1,7 +1,9 @@
 ---
-title: 
+title: "Google Moonshot" 
 date: 2024-09-08
 slug: Google_Moonshot
+categories: [science]
+tags: [Google, Moonshot]
 image:
   path: /img/18a64f06-6e5a-4570-98b5-b761015ff67e_cover.png
   alt: 
