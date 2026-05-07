@@ -1,7 +1,5 @@
 name: Notion to Markdown Sync
 on:
-  schedule:
-    - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allows you to run it manually
 
 jobs:
