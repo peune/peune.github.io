@@ -3,8 +3,6 @@ title: เกร็ดเกี่ยวกับ Niels Bohr
 date: 2024-02-14 
 categories: [science]
 tags: [Niels Bohr]
-comments: false
-math: true
 excerpt_separator: <!--more-->
 ---
 
