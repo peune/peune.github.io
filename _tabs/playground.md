@@ -2,6 +2,7 @@
 # the default layout is 'page'
 icon: fas fa-info-circle
 order: 5
+include_in_timeline: true
 ---
 
 ## I2G
