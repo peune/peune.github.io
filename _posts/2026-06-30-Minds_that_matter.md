@@ -6,6 +6,7 @@ categories: [future]
 toc: false
 ---
 
+
 <style>
   .infographic-wrap * { box-sizing: border-box; }
   .infographic-wrap {
@@ -33,25 +34,21 @@ toc: false
     display: flex; flex-direction: column; align-items: center; text-align: center;
   }
 
-  /* Avatar circle — plain div, no nested <a> (avoids Bootstrap anchor overrides) */
+  /* Avatar frame — rounded rectangle, background-image approach bypasses Bootstrap img rules */
   .infographic-wrap .avatar-wrap {
     display: block;
-    width: 72px; height: 72px;
-    border-radius: 50%; overflow: hidden;
+    width: 72px; height: 88px;
+    border-radius: 12px; overflow: hidden;
     border: 3px solid;
     margin-bottom: 10px; flex-shrink: 0;
-  }
-  /* !important overrides Bootstrap's img { max-width:100%; height:auto } */
-  .infographic-wrap .avatar-wrap img {
-    width: 72px !important; height: 72px !important;
-    max-width: none !important;
-    object-fit: cover !important; object-position: center 20% !important;
-    display: block !important;
+    background-size: cover;
+    background-position: center 20%;
+    background-repeat: no-repeat;
   }
   /* Fallback span — injected by JS only when image fails */
   .infographic-wrap .avatar-fallback {
-    display: flex !important;
-    width: 72px; height: 72px;
+    display: flex;
+    width: 72px; height: 88px;
     align-items: center; justify-content: center;
     font-size: 20px; font-weight: 800; color: #fff;
   }
@@ -129,14 +126,26 @@ toc: false
 </style>
 
 <script>
-/* Replace broken image with a coloured initials badge.
-   Called via onerror — only fires when the photo fails to load. */
-function avatarFallback(img, initials) {
-  var fb = document.createElement('span');
-  fb.className = 'avatar-fallback';
-  fb.textContent = initials;
-  img.parentNode.replaceChild(fb, img);
-}
+/* Preload each portrait via a hidden Image object.
+   On success: set background-image on the wrap div (immune to Bootstrap img rules).
+   On failure: inject a coloured initials badge. */
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.avatar-wrap[data-img]').forEach(function(wrap) {
+    var src = wrap.getAttribute('data-img');
+    var initials = wrap.getAttribute('data-initials');
+    var probe = new Image();
+    probe.onload = function() {
+      wrap.style.backgroundImage = 'url("' + src + '")';
+    };
+    probe.onerror = function() {
+      var fb = document.createElement('span');
+      fb.className = 'avatar-fallback';
+      fb.textContent = initials;
+      wrap.appendChild(fb);
+    };
+    probe.src = src;
+  });
+});
 </script>
 
 <div class="infographic-wrap">
@@ -154,9 +163,9 @@ function avatarFallback(img, initials) {
     <div class="cards-grid">
 
       <div class="card c-ai">
-        <div class="avatar-wrap av-ai" title="The Royal Society, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg/250px-Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg" alt="Demis Hassabis" onerror="avatarFallback(this,'DH')">
-        </div>
+        <div class="avatar-wrap av-ai" title="The Royal Society, CC BY-SA 3.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg/250px-Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg"
+             data-initials="DH"></div>
         <div class="card-name">Demis Hassabis</div>
         <div class="card-role">DeepMind / Nobel Laureate</div>
         <div class="card-skill">Bridges neuroscience + AI. AlphaFold solved a 50-year biology problem by combining two deep fields.</div>
@@ -164,9 +173,9 @@ function avatarFallback(img, initials) {
       </div>
 
       <div class="card c-ai">
-        <div class="avatar-wrap av-ai" title="Gladwin Analytics, CC BY 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Andrej_Karpathy%2C_OpenAI_%28cropped%29.png/250px-Andrej_Karpathy%2C_OpenAI_%28cropped%29.png" alt="Andrej Karpathy" onerror="avatarFallback(this,'AK')">
-        </div>
+        <div class="avatar-wrap av-ai" title="Gladwin Analytics, CC BY 3.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Andrej_Karpathy%2C_OpenAI_%28cropped%29.png/250px-Andrej_Karpathy%2C_OpenAI_%28cropped%29.png"
+             data-initials="AK"></div>
         <div class="card-name">Andrej Karpathy</div>
         <div class="card-role">OpenAI · Tesla · Anthropic</div>
         <div class="card-skill">Understands AI from first principles and teaches it brilliantly. Rare builder + educator combination.</div>
@@ -174,9 +183,9 @@ function avatarFallback(img, initials) {
       </div>
 
       <div class="card c-ai">
-        <div class="avatar-wrap av-ai" title="Amir Zuk, CC BY-SA 4.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg/250px-Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg" alt="Ilya Sutskever" onerror="avatarFallback(this,'IS')">
-        </div>
+        <div class="avatar-wrap av-ai" title="Amir Zuk, CC BY-SA 4.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg/250px-Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg"
+             data-initials="IS"></div>
         <div class="card-name">Ilya Sutskever</div>
         <div class="card-role">OpenAI co-founder / SSI</div>
         <div class="card-skill">AlexNet architect. Left OpenAI over safety convictions. Models intellectual courage in high-stakes settings.</div>
@@ -184,9 +193,9 @@ function avatarFallback(img, initials) {
       </div>
 
       <div class="card c-ai">
-        <div class="avatar-wrap av-ai" title="Frankie Fouganthin, CC BY-SA 4.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Yann_LeCun_-_2018_%28cropped%29.jpg/250px-Yann_LeCun_-_2018_%28cropped%29.jpg" alt="Yann LeCun" onerror="avatarFallback(this,'YL')">
-        </div>
+        <div class="avatar-wrap av-ai" title="Frankie Fouganthin, CC BY-SA 4.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Yann_LeCun_-_2018_%28cropped%29.jpg/250px-Yann_LeCun_-_2018_%28cropped%29.jpg"
+             data-initials="YL"></div>
         <div class="card-name">Yann LeCun</div>
         <div class="card-role">Meta AI / Turing Award</div>
         <div class="card-skill">Invented CNNs. Willing to hold contrarian views publicly. Teaches skepticism of consensus.</div>
@@ -194,9 +203,9 @@ function avatarFallback(img, initials) {
       </div>
 
       <div class="card c-ai">
-        <div class="avatar-wrap av-ai" title="Annika Bergman Rosamond / Nobel Prize Outreach, CC BY-SA 4.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg/250px-Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg" alt="Geoffrey Hinton" onerror="avatarFallback(this,'GH')">
-        </div>
+        <div class="avatar-wrap av-ai" title="Annika Bergman Rosamond / Nobel Prize Outreach, CC BY-SA 4.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg/250px-Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg"
+             data-initials="GH"></div>
         <div class="card-name">Geoffrey Hinton</div>
         <div class="card-role">Godfather of Deep Learning</div>
         <div class="card-skill">Intellectual root of modern AI. Left Google to speak freely on existential risk. Models belief updating under new evidence.</div>
@@ -204,9 +213,9 @@ function avatarFallback(img, initials) {
       </div>
 
       <div class="card c-ai">
-        <div class="avatar-wrap av-ai" title="The Source, CC BY 3.0 US, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Andrew_Ng.png/250px-Andrew_Ng.png" alt="Andrew Ng" onerror="avatarFallback(this,'AN')">
-        </div>
+        <div class="avatar-wrap av-ai" title="The Source, CC BY 3.0 US, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Andrew_Ng.png/250px-Andrew_Ng.png"
+             data-initials="AN"></div>
         <div class="card-name">Andrew Ng</div>
         <div class="card-role">Google Brain · Coursera · DeepLearning.AI</div>
         <div class="card-skill">Built AI education infrastructure for millions. Democratising technical skills at scale is one of the highest-leverage acts of the next 20 years.</div>
@@ -225,18 +234,18 @@ function avatarFallback(img, initials) {
     </div>
     <div class="cards">
       <div class="card c-phil">
-        <div class="avatar-wrap av-phil" title="Marie-Lan Nguyen, Public domain, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Portrait_of_Marcus_Aurelius.jpg/250px-Portrait_of_Marcus_Aurelius.jpg" alt="Marcus Aurelius" onerror="avatarFallback(this,'MA')">
-        </div>
+        <div class="avatar-wrap av-phil" title="Marie-Lan Nguyen, Public domain, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Portrait_of_Marcus_Aurelius.jpg/250px-Portrait_of_Marcus_Aurelius.jpg"
+             data-initials="MA"></div>
         <div class="card-name">Marcus Aurelius</div>
         <div class="card-role">Roman Emperor · Stoic</div>
         <div class="card-skill">Most powerful man in the world, privately practicing humility daily. The original resilience framework under pressure.</div>
         <span class="card-tag tag-phil">Stoic resilience</span>
       </div>
       <div class="card c-phil">
-        <div class="avatar-wrap av-phil" title="Dürr / Spiegel, CC BY-SA 3.0 DE, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hannah_Arendt_1975_%28cropped%29.jpg/250px-Hannah_Arendt_1975_%28cropped%29.jpg" alt="Hannah Arendt" onerror="avatarFallback(this,'HA')">
-        </div>
+        <div class="avatar-wrap av-phil" title="Dürr / Spiegel, CC BY-SA 3.0 DE, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hannah_Arendt_1975_%28cropped%29.jpg/250px-Hannah_Arendt_1975_%28cropped%29.jpg"
+             data-initials="HA"></div>
         <div class="card-name">Hannah Arendt</div>
         <div class="card-role">Political Philosopher</div>
         <div class="card-skill">"Banality of evil" — how ordinary systems produce monstrous outcomes. Essential lens for AI governance and algorithmic harm.</div>
@@ -252,18 +261,18 @@ function avatarFallback(img, initials) {
     </div>
     <div class="cards">
       <div class="card c-econ">
-        <div class="avatar-wrap av-econ" title="Fronteiras do Pensamento, CC BY-SA 2.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Daniel_Kahneman_%283283955327%29.jpg/250px-Daniel_Kahneman_%283283955327%29.jpg" alt="Daniel Kahneman" onerror="avatarFallback(this,'DK')">
-        </div>
+        <div class="avatar-wrap av-econ" title="Fronteiras do Pensamento, CC BY-SA 2.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Daniel_Kahneman_%283283955327%29.jpg/250px-Daniel_Kahneman_%283283955327%29.jpg"
+             data-initials="DK"></div>
         <div class="card-name">Daniel Kahneman</div>
         <div class="card-role">Nobel Laureate · Behavioral Econ</div>
         <div class="card-skill">System 1 vs. System 2: knowing when to trust fast intuition vs. slow deliberation. Critical for working with AI outputs.</div>
         <span class="card-tag tag-econ">Cognitive bias</span>
       </div>
       <div class="card c-econ">
-        <div class="avatar-wrap av-econ" title="World Economic Forum, CC BY-SA 2.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Clayton_Christensen_World_Economic_Forum_2013.jpg/250px-Clayton_Christensen_World_Economic_Forum_2013.jpg" alt="Clayton Christensen" onerror="avatarFallback(this,'CC')">
-        </div>
+        <div class="avatar-wrap av-econ" title="World Economic Forum, CC BY-SA 2.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Clayton_Christensen_World_Economic_Forum_2013.jpg/250px-Clayton_Christensen_World_Economic_Forum_2013.jpg"
+             data-initials="CC"></div>
         <div class="card-name">Clayton Christensen</div>
         <div class="card-role">Disruption Theory</div>
         <div class="card-skill">New tech underperforms then overtakes incumbents. The best map for how AI will move through industries over 20 years.</div>
@@ -279,18 +288,18 @@ function avatarFallback(img, initials) {
     </div>
     <div class="cards">
       <div class="card c-art">
-        <div class="avatar-wrap av-art" title="Leonardo da Vinci, Public domain, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/250px-Leonardo_self.jpg" alt="Leonardo da Vinci" onerror="avatarFallback(this,'LV')">
-        </div>
+        <div class="avatar-wrap av-art" title="Leonardo da Vinci, Public domain, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/250px-Leonardo_self.jpg"
+             data-initials="LV"></div>
         <div class="card-name">Leonardo da Vinci</div>
         <div class="card-role">Renaissance Polymath</div>
         <div class="card-skill">Unified art, anatomy, engineering and hydraulics in one mind. The original model for cross-domain thinking.</div>
         <span class="card-tag tag-art">Polymathic curiosity</span>
       </div>
       <div class="card c-art">
-        <div class="avatar-wrap av-art" title="Hajor, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg/250px-Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg" alt="Ursula K. Le Guin" onerror="avatarFallback(this,'UL')">
-        </div>
+        <div class="avatar-wrap av-art" title="Hajor, CC BY-SA 3.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg/250px-Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg"
+             data-initials="UL"></div>
         <div class="card-name">Ursula K. Le Guin</div>
         <div class="card-role">Science Fiction Author</div>
         <div class="card-skill">Built entire societies with different economics and structures — rigorously. Models second-order AI consequence thinking.</div>
@@ -306,18 +315,18 @@ function avatarFallback(img, initials) {
     </div>
     <div class="cards">
       <div class="card c-sci">
-        <div class="avatar-wrap av-sci" title="Caltech, Public domain, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Richard_Feynman_1959.png/250px-Richard_Feynman_1959.png" alt="Richard Feynman" onerror="avatarFallback(this,'RF')">
-        </div>
+        <div class="avatar-wrap av-sci" title="Caltech, Public domain, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Richard_Feynman_1959.png/250px-Richard_Feynman_1959.png"
+             data-initials="RF"></div>
         <div class="card-name">Richard Feynman</div>
         <div class="card-role">Physicist · Educator</div>
         <div class="card-skill">If you can't explain it simply, you don't understand it. First-principles learning is the core human skill as AI handles surface knowledge.</div>
         <span class="card-tag tag-sci">First-principles thinking</span>
       </div>
       <div class="card c-sci">
-        <div class="avatar-wrap av-sci" title="The Planetary Society, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Carl_Sagan_Planetary_Society.JPG/250px-Carl_Sagan_Planetary_Society.JPG" alt="Carl Sagan" onerror="avatarFallback(this,'CS')">
-        </div>
+        <div class="avatar-wrap av-sci" title="The Planetary Society, CC BY-SA 3.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Carl_Sagan_Planetary_Society.JPG/250px-Carl_Sagan_Planetary_Society.JPG"
+             data-initials="CS"></div>
         <div class="card-name">Carl Sagan</div>
         <div class="card-role">Astronomer · Communicator</div>
         <div class="card-skill">His Baloney Detection Kit is a practical manual for navigating AI-generated misinformation and epistemic pollution.</div>
@@ -333,18 +342,18 @@ function avatarFallback(img, initials) {
     </div>
     <div class="cards">
       <div class="card c-psych">
-        <div class="avatar-wrap av-psych" title="Prof. Dr. Franz Vesely, CC BY-SA 3.0 AT, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Viktor_Frankl2.jpg/250px-Viktor_Frankl2.jpg" alt="Viktor Frankl" onerror="avatarFallback(this,'VF')">
-        </div>
+        <div class="avatar-wrap av-psych" title="Prof. Dr. Franz Vesely, CC BY-SA 3.0 AT, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Viktor_Frankl2.jpg/250px-Viktor_Frankl2.jpg"
+             data-initials="VF"></div>
         <div class="card-name">Viktor Frankl</div>
         <div class="card-role">Logotherapy · Holocaust Survivor</div>
         <div class="card-skill">Meaning — not pleasure — is the primary human motivator. When AI handles routine work, the question of meaning becomes central.</div>
         <span class="card-tag tag-psych">Meaning-making</span>
       </div>
       <div class="card c-psych">
-        <div class="avatar-wrap av-psych" title="Innovation documentary, CC BY 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Carol_Dweck_for_Innovation_documentary.jpg/250px-Carol_Dweck_for_Innovation_documentary.jpg" alt="Carol Dweck" onerror="avatarFallback(this,'CD')">
-        </div>
+        <div class="avatar-wrap av-psych" title="Innovation documentary, CC BY 3.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Carol_Dweck_for_Innovation_documentary.jpg/250px-Carol_Dweck_for_Innovation_documentary.jpg"
+             data-initials="CD"></div>
         <div class="card-name">Carol Dweck</div>
         <div class="card-role">Stanford Psychologist</div>
         <div class="card-skill">Growth mindset: ability is expandable, not fixed. The psychological foundation for continuous reskilling the next 20 years will demand.</div>
@@ -360,18 +369,18 @@ function avatarFallback(img, initials) {
     </div>
     <div class="cards">
       <div class="card c-pol">
-        <div class="avatar-wrap av-pol" title="South Africa The Good News, CC BY 2.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Nelson_Mandela-2008_%28edit%29.jpg/250px-Nelson_Mandela-2008_%28edit%29.jpg" alt="Nelson Mandela" onerror="avatarFallback(this,'NM')">
-        </div>
+        <div class="avatar-wrap av-pol" title="South Africa The Good News, CC BY 2.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Nelson_Mandela-2008_%28edit%29.jpg/250px-Nelson_Mandela-2008_%28edit%29.jpg"
+             data-initials="NM"></div>
         <div class="card-name">Nelson Mandela</div>
         <div class="card-role">President of South Africa</div>
         <div class="card-skill">27 years in prison, emerged choosing reconciliation over revenge. Long-term moral vision under extreme pressure.</div>
         <span class="card-tag tag-pol">Moral leadership</span>
       </div>
       <div class="card c-pol">
-        <div class="avatar-wrap av-pol" title="Krokodyl, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Vaclav_Havel.jpg/250px-Vaclav_Havel.jpg" alt="Václav Havel" onerror="avatarFallback(this,'VH')">
-        </div>
+        <div class="avatar-wrap av-pol" title="Krokodyl, CC BY-SA 3.0, via Wikimedia Commons"
+             data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Vaclav_Havel.jpg/250px-Vaclav_Havel.jpg"
+             data-initials="VH"></div>
         <div class="card-name">Václav Havel</div>
         <div class="card-role">Playwright · Czech President</div>
         <div class="card-skill">"Living in truth" as resistance to systems built on lies. Directly applicable in a world of deepfakes and AI-generated propaganda.</div>
@@ -382,7 +391,4 @@ function avatarFallback(img, initials) {
 
   <div class="inf-footer">
     <strong>Common thread across all 18:</strong> deep observational patience · comfort with uncertainty · skepticism of surface appearances · systems thinking<br>
-    <small>Photos via <a href="https://commons.wikimedia.org" target="_blank">Wikimedia Commons</a> — click any portrait for full attribution · All images Creative Commons licensed</small>
-  </div>
-
-</div>
+    <small>Photos via <a href="https://commons.wikimedia.org" target="_blank">Wikimedia Commons</a> — click any portrait for full attribution · All imag
