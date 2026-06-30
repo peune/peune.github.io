@@ -289,7 +289,7 @@ function avatarFallback(img, initials) {
       </div>
       <div class="card c-art">
         <div class="avatar-wrap av-art" title="Hajor, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg/250px-Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg" alt="Ursula K. Le Guin" onerror="avatarFallback(this,'UL')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg/250px-Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg" alt="Ursula K. Le Guin" onerror="avatarFallback(this,'UL')">
         </div>
         <div class="card-name">Ursula K. Le Guin</div>
         <div class="card-role">Science Fiction Author</div>
