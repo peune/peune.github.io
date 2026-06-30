@@ -1,10 +1,9 @@
 ---
 layout: page
 title: "Minds that matter"
-date: 2026-06-06
+date: 2026-06-30
 slug: "Minds that matter"
 categories: [future]
-permalink: /minds-that-matter/
 toc: false
 ---
 
