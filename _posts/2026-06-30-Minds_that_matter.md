@@ -45,7 +45,7 @@ toc: false
   .infographic-wrap .avatar-wrap img {
     width: 72px !important; height: 72px !important;
     max-width: none !important;
-    object-fit: cover !important; object-position: center top !important;
+    object-fit: cover !important; object-position: center 20% !important;
     display: block !important;
   }
   /* Fallback span — injected by JS only when image fails */
@@ -155,7 +155,7 @@ function avatarFallback(img, initials) {
 
       <div class="card c-ai">
         <div class="avatar-wrap av-ai" title="The Royal Society, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg/250px-Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg" alt="Demis Hassabis" onerror="avatarFallback(this,'DH')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg/250px-Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg" alt="Demis Hassabis" onerror="avatarFallback(this,'DH')">
         </div>
         <div class="card-name">Demis Hassabis</div>
         <div class="card-role">DeepMind / Nobel Laureate</div>
@@ -165,7 +165,7 @@ function avatarFallback(img, initials) {
 
       <div class="card c-ai">
         <div class="avatar-wrap av-ai" title="Gladwin Analytics, CC BY 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Andrej_Karpathy%2C_OpenAI_%28cropped%29.png/250px-Andrej_Karpathy%2C_OpenAI_%28cropped%29.png" alt="Andrej Karpathy" onerror="avatarFallback(this,'AK')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Andrej_Karpathy%2C_OpenAI_%28cropped%29.png/250px-Andrej_Karpathy%2C_OpenAI_%28cropped%29.png" alt="Andrej Karpathy" onerror="avatarFallback(this,'AK')">
         </div>
         <div class="card-name">Andrej Karpathy</div>
         <div class="card-role">OpenAI · Tesla · Anthropic</div>
@@ -175,7 +175,7 @@ function avatarFallback(img, initials) {
 
       <div class="card c-ai">
         <div class="avatar-wrap av-ai" title="Amir Zuk, CC BY-SA 4.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg/250px-Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg" alt="Ilya Sutskever" onerror="avatarFallback(this,'IS')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg/250px-Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg" alt="Ilya Sutskever" onerror="avatarFallback(this,'IS')">
         </div>
         <div class="card-name">Ilya Sutskever</div>
         <div class="card-role">OpenAI co-founder / SSI</div>
@@ -185,7 +185,7 @@ function avatarFallback(img, initials) {
 
       <div class="card c-ai">
         <div class="avatar-wrap av-ai" title="Frankie Fouganthin, CC BY-SA 4.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Yann_LeCun_-_2018_%28cropped%29.jpg/250px-Yann_LeCun_-_2018_%28cropped%29.jpg" alt="Yann LeCun" onerror="avatarFallback(this,'YL')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Yann_LeCun_-_2018_%28cropped%29.jpg/250px-Yann_LeCun_-_2018_%28cropped%29.jpg" alt="Yann LeCun" onerror="avatarFallback(this,'YL')">
         </div>
         <div class="card-name">Yann LeCun</div>
         <div class="card-role">Meta AI / Turing Award</div>
@@ -195,7 +195,7 @@ function avatarFallback(img, initials) {
 
       <div class="card c-ai">
         <div class="avatar-wrap av-ai" title="Annika Bergman Rosamond / Nobel Prize Outreach, CC BY-SA 4.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg/250px-Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg" alt="Geoffrey Hinton" onerror="avatarFallback(this,'GH')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg/250px-Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg" alt="Geoffrey Hinton" onerror="avatarFallback(this,'GH')">
         </div>
         <div class="card-name">Geoffrey Hinton</div>
         <div class="card-role">Godfather of Deep Learning</div>
@@ -205,7 +205,7 @@ function avatarFallback(img, initials) {
 
       <div class="card c-ai">
         <div class="avatar-wrap av-ai" title="The Source, CC BY 3.0 US, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Andrew_Ng.png/250px-Andrew_Ng.png" alt="Andrew Ng" onerror="avatarFallback(this,'AN')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Andrew_Ng.png/250px-Andrew_Ng.png" alt="Andrew Ng" onerror="avatarFallback(this,'AN')">
         </div>
         <div class="card-name">Andrew Ng</div>
         <div class="card-role">Google Brain · Coursera · DeepLearning.AI</div>
@@ -226,7 +226,7 @@ function avatarFallback(img, initials) {
     <div class="cards">
       <div class="card c-phil">
         <div class="avatar-wrap av-phil" title="Marie-Lan Nguyen, Public domain, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Portrait_of_Marcus_Aurelius.jpg/250px-Portrait_of_Marcus_Aurelius.jpg" alt="Marcus Aurelius" onerror="avatarFallback(this,'MA')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Portrait_of_Marcus_Aurelius.jpg/250px-Portrait_of_Marcus_Aurelius.jpg" alt="Marcus Aurelius" onerror="avatarFallback(this,'MA')">
         </div>
         <div class="card-name">Marcus Aurelius</div>
         <div class="card-role">Roman Emperor · Stoic</div>
@@ -235,7 +235,7 @@ function avatarFallback(img, initials) {
       </div>
       <div class="card c-phil">
         <div class="avatar-wrap av-phil" title="Dürr / Spiegel, CC BY-SA 3.0 DE, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hannah_Arendt_1975_%28cropped%29.jpg/250px-Hannah_Arendt_1975_%28cropped%29.jpg" alt="Hannah Arendt" onerror="avatarFallback(this,'HA')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hannah_Arendt_1975_%28cropped%29.jpg/250px-Hannah_Arendt_1975_%28cropped%29.jpg" alt="Hannah Arendt" onerror="avatarFallback(this,'HA')">
         </div>
         <div class="card-name">Hannah Arendt</div>
         <div class="card-role">Political Philosopher</div>
@@ -262,7 +262,7 @@ function avatarFallback(img, initials) {
       </div>
       <div class="card c-econ">
         <div class="avatar-wrap av-econ" title="World Economic Forum, CC BY-SA 2.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Clayton_Christensen_World_Economic_Forum_2013.jpg/250px-Clayton_Christensen_World_Economic_Forum_2013.jpg" alt="Clayton Christensen" onerror="avatarFallback(this,'CC')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Clayton_Christensen_World_Economic_Forum_2013.jpg/250px-Clayton_Christensen_World_Economic_Forum_2013.jpg" alt="Clayton Christensen" onerror="avatarFallback(this,'CC')">
         </div>
         <div class="card-name">Clayton Christensen</div>
         <div class="card-role">Disruption Theory</div>
@@ -280,7 +280,7 @@ function avatarFallback(img, initials) {
     <div class="cards">
       <div class="card c-art">
         <div class="avatar-wrap av-art" title="Leonardo da Vinci, Public domain, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/250px-Leonardo_self.jpg" alt="Leonardo da Vinci" onerror="avatarFallback(this,'LV')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/250px-Leonardo_self.jpg" alt="Leonardo da Vinci" onerror="avatarFallback(this,'LV')">
         </div>
         <div class="card-name">Leonardo da Vinci</div>
         <div class="card-role">Renaissance Polymath</div>
@@ -289,7 +289,7 @@ function avatarFallback(img, initials) {
       </div>
       <div class="card c-art">
         <div class="avatar-wrap av-art" title="Hajor, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg/250px-Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg" alt="Ursula K. Le Guin" onerror="avatarFallback(this,'UL')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg/250px-Ursula_Le_Guin_%283551195631%29_-_Restoration.jpg" alt="Ursula K. Le Guin" onerror="avatarFallback(this,'UL')">
         </div>
         <div class="card-name">Ursula K. Le Guin</div>
         <div class="card-role">Science Fiction Author</div>
@@ -307,7 +307,7 @@ function avatarFallback(img, initials) {
     <div class="cards">
       <div class="card c-sci">
         <div class="avatar-wrap av-sci" title="Caltech, Public domain, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Richard_Feynman_1959.png/250px-Richard_Feynman_1959.png" alt="Richard Feynman" onerror="avatarFallback(this,'RF')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Richard_Feynman_1959.png/250px-Richard_Feynman_1959.png" alt="Richard Feynman" onerror="avatarFallback(this,'RF')">
         </div>
         <div class="card-name">Richard Feynman</div>
         <div class="card-role">Physicist · Educator</div>
@@ -316,7 +316,7 @@ function avatarFallback(img, initials) {
       </div>
       <div class="card c-sci">
         <div class="avatar-wrap av-sci" title="The Planetary Society, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Carl_Sagan_Planetary_Society.JPG/250px-Carl_Sagan_Planetary_Society.JPG" alt="Carl Sagan" onerror="avatarFallback(this,'CS')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Carl_Sagan_Planetary_Society.JPG/250px-Carl_Sagan_Planetary_Society.JPG" alt="Carl Sagan" onerror="avatarFallback(this,'CS')">
         </div>
         <div class="card-name">Carl Sagan</div>
         <div class="card-role">Astronomer · Communicator</div>
@@ -334,7 +334,7 @@ function avatarFallback(img, initials) {
     <div class="cards">
       <div class="card c-psych">
         <div class="avatar-wrap av-psych" title="Prof. Dr. Franz Vesely, CC BY-SA 3.0 AT, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Viktor_Frankl2.jpg/250px-Viktor_Frankl2.jpg" alt="Viktor Frankl" onerror="avatarFallback(this,'VF')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Viktor_Frankl2.jpg/250px-Viktor_Frankl2.jpg" alt="Viktor Frankl" onerror="avatarFallback(this,'VF')">
         </div>
         <div class="card-name">Viktor Frankl</div>
         <div class="card-role">Logotherapy · Holocaust Survivor</div>
@@ -343,7 +343,7 @@ function avatarFallback(img, initials) {
       </div>
       <div class="card c-psych">
         <div class="avatar-wrap av-psych" title="Innovation documentary, CC BY 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Carol_Dweck_for_Innovation_documentary.jpg/250px-Carol_Dweck_for_Innovation_documentary.jpg" alt="Carol Dweck" onerror="avatarFallback(this,'CD')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Carol_Dweck_for_Innovation_documentary.jpg/250px-Carol_Dweck_for_Innovation_documentary.jpg" alt="Carol Dweck" onerror="avatarFallback(this,'CD')">
         </div>
         <div class="card-name">Carol Dweck</div>
         <div class="card-role">Stanford Psychologist</div>
@@ -361,7 +361,7 @@ function avatarFallback(img, initials) {
     <div class="cards">
       <div class="card c-pol">
         <div class="avatar-wrap av-pol" title="South Africa The Good News, CC BY 2.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Nelson_Mandela-2008_%28edit%29.jpg/250px-Nelson_Mandela-2008_%28edit%29.jpg" alt="Nelson Mandela" onerror="avatarFallback(this,'NM')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Nelson_Mandela-2008_%28edit%29.jpg/250px-Nelson_Mandela-2008_%28edit%29.jpg" alt="Nelson Mandela" onerror="avatarFallback(this,'NM')">
         </div>
         <div class="card-name">Nelson Mandela</div>
         <div class="card-role">President of South Africa</div>
@@ -370,7 +370,7 @@ function avatarFallback(img, initials) {
       </div>
       <div class="card c-pol">
         <div class="avatar-wrap av-pol" title="Krokodyl, CC BY-SA 3.0, via Wikimedia Commons">
-          <img style="width:72px;height:72px;object-fit:cover;object-position:center top;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Vaclav_Havel.jpg/250px-Vaclav_Havel.jpg" alt="Václav Havel" onerror="avatarFallback(this,'VH')">
+          <img style="width:72px;height:72px;object-fit:cover;object-position:center 20%;display:block;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Vaclav_Havel.jpg/250px-Vaclav_Havel.jpg" alt="Václav Havel" onerror="avatarFallback(this,'VH')">
         </div>
         <div class="card-name">Václav Havel</div>
         <div class="card-role">Playwright · Czech President</div>
