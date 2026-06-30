@@ -1,5 +1,5 @@
 ---
-title: "Minds that matter"
+title: "Minds That Matter: Next 20 years"
 date: 2026-06-30
 slug: "Minds that matter"
 categories: [future]
@@ -15,17 +15,17 @@ toc: false
   }
   .infographic-wrap .ifw-header { text-align: center; margin-bottom: 28px; }
   .infographic-wrap .ifw-header h2 { font-size: 22px; font-weight: 800; color: #111318; margin-bottom: 5px; border: none; padding: 0; }
-  .infographic-wrap .ifw-header p { font-size: 13px; color: #666980; }
+  .infographic-wrap .ifw-header p  { font-size: 13px; color: #666980; }
 
   .infographic-wrap .domain-block { margin-bottom: 22px; }
   .infographic-wrap .domain-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .infographic-wrap .domain-label .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .infographic-wrap .domain-label .dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .infographic-wrap .domain-label .dname { font-size: 11px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; color: #444657; }
   .infographic-wrap .domain-label .count { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
 
   .infographic-wrap .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .infographic-wrap .cards { display: flex; gap: 10px; flex-wrap: wrap; }
-  .infographic-wrap .cards .card { flex: 1; min-width: 155px; }
+  .infographic-wrap .cards      { display: flex; gap: 10px; flex-wrap: wrap; }
+  .infographic-wrap .cards .card{ flex: 1; min-width: 155px; }
 
   .infographic-wrap .card {
     background: #fff; border-radius: 12px; padding: 16px 14px 14px;
@@ -33,32 +33,25 @@ toc: false
     display: flex; flex-direction: column; align-items: center; text-align: center;
   }
 
-  /* ── Avatar: image stacks OVER fallback, same container ── */
+  /* Avatar ring — no background; image fills it */
   .infographic-wrap .avatar-wrap {
-    position: relative;
-    display: block;
+    display: flex; align-items: center; justify-content: center;
     width: 72px; height: 72px;
-    border-radius: 50%;
-    overflow: hidden;
+    border-radius: 50%; overflow: hidden;
     border: 3px solid;
-    margin-bottom: 10px;
-    flex-shrink: 0;
+    margin-bottom: 10px; flex-shrink: 0;
     text-decoration: none;
   }
-  /* Fallback initials — fills container, always rendered at back */
-  .infographic-wrap .avatar-fallback {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; font-weight: 800; color: #fff;
-    z-index: 1;
-  }
-  /* Photo — sits on top; hidden via onerror when broken */
   .infographic-wrap .avatar-wrap img {
-    position: absolute; top: 0; left: 0;
     width: 100%; height: 100%;
     object-fit: cover; object-position: center top;
-    display: block; z-index: 2;
+    display: block;
+  }
+  /* Fallback — created by JS only on image error */
+  .infographic-wrap .avatar-fallback {
+    display: flex; width: 100%; height: 100%;
+    align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; color: #fff;
   }
 
   .infographic-wrap .card-name  { font-size: 13px; font-weight: 800; color: #111318; margin-bottom: 2px; }
@@ -67,7 +60,7 @@ toc: false
   .infographic-wrap .card-tag   { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; margin-top: 9px; }
   .infographic-wrap .divider    { height: 1px; background: #e0e2ea; margin: 20px 0; }
 
-  /* Domain border colour on card top */
+  /* Card top border */
   .infographic-wrap .c-ai   { border-top-color: #4C6EF5; }
   .infographic-wrap .c-phil { border-top-color: #9B59D0; }
   .infographic-wrap .c-econ { border-top-color: #1CAB8A; }
@@ -76,20 +69,22 @@ toc: false
   .infographic-wrap .c-psych{ border-top-color: #D4A017; }
   .infographic-wrap .c-pol  { border-top-color: #C94070; }
 
-  /* Avatar ring colour + fallback background — scoped by domain */
+  /* Avatar ring colour */
   .infographic-wrap .av-ai   { border-color: #4C6EF5; }
-  .infographic-wrap .av-ai   .avatar-fallback { background: #4C6EF5; }
   .infographic-wrap .av-phil { border-color: #9B59D0; }
-  .infographic-wrap .av-phil .avatar-fallback { background: #9B59D0; }
   .infographic-wrap .av-econ { border-color: #1CAB8A; }
-  .infographic-wrap .av-econ .avatar-fallback { background: #1CAB8A; }
   .infographic-wrap .av-art  { border-color: #E8722A; }
-  .infographic-wrap .av-art  .avatar-fallback { background: #E8722A; }
   .infographic-wrap .av-sci  { border-color: #2196C9; }
-  .infographic-wrap .av-sci  .avatar-fallback { background: #2196C9; }
   .infographic-wrap .av-psych{ border-color: #D4A017; }
-  .infographic-wrap .av-psych .avatar-fallback { background: #D4A017; }
   .infographic-wrap .av-pol  { border-color: #C94070; }
+
+  /* Fallback background (JS-injected) inherits from parent domain colour */
+  .infographic-wrap .av-ai   .avatar-fallback { background: #4C6EF5; }
+  .infographic-wrap .av-phil .avatar-fallback { background: #9B59D0; }
+  .infographic-wrap .av-econ .avatar-fallback { background: #1CAB8A; }
+  .infographic-wrap .av-art  .avatar-fallback { background: #E8722A; }
+  .infographic-wrap .av-sci  .avatar-fallback { background: #2196C9; }
+  .infographic-wrap .av-psych .avatar-fallback{ background: #D4A017; }
   .infographic-wrap .av-pol  .avatar-fallback { background: #C94070; }
 
   /* Domain dots */
@@ -127,13 +122,20 @@ toc: false
   .infographic-wrap .inf-footer strong { color: #111318; }
   .infographic-wrap .inf-footer a { color: #4C6EF5; text-decoration: none; }
 
-  @media (max-width: 640px) {
-    .infographic-wrap .cards-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 420px) {
-    .infographic-wrap .cards-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 640px) { .infographic-wrap .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 420px) { .infographic-wrap .cards-grid { grid-template-columns: 1fr; } }
 </style>
+
+<script>
+/* Replace broken image with a coloured initials badge.
+   Called via onerror — only fires when the photo fails to load. */
+function avatarFallback(img, initials) {
+  var fb = document.createElement('span');
+  fb.className = 'avatar-fallback';
+  fb.textContent = initials;
+  img.parentNode.replaceChild(fb, img);
+}
+</script>
 
 <div class="infographic-wrap">
 
@@ -151,8 +153,7 @@ toc: false
 
       <div class="card c-ai">
         <a class="avatar-wrap av-ai" href="https://commons.wikimedia.org/wiki/File:Demis_Hassabis_Royal_Society_(3x4_cropped).jpg" title="The Royal Society, CC BY-SA 3.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">DH</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg/250px-Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg" alt="Demis Hassabis" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg/250px-Demis_Hassabis_Royal_Society_%283x4_cropped%29.jpg" alt="Demis Hassabis" onerror="avatarFallback(this,'DH')">
         </a>
         <div class="card-name">Demis Hassabis</div>
         <div class="card-role">DeepMind / Nobel Laureate</div>
@@ -162,8 +163,7 @@ toc: false
 
       <div class="card c-ai">
         <a class="avatar-wrap av-ai" href="https://commons.wikimedia.org/wiki/File:Andrej_Karpathy,_OpenAI_(cropped).png" title="Gladwin Analytics, CC BY 3.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">AK</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Andrej_Karpathy%2C_OpenAI_%28cropped%29.png/250px-Andrej_Karpathy%2C_OpenAI_%28cropped%29.png" alt="Andrej Karpathy" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Andrej_Karpathy%2C_OpenAI_%28cropped%29.png/250px-Andrej_Karpathy%2C_OpenAI_%28cropped%29.png" alt="Andrej Karpathy" onerror="avatarFallback(this,'AK')">
         </a>
         <div class="card-name">Andrej Karpathy</div>
         <div class="card-role">OpenAI · Tesla · Anthropic</div>
@@ -173,8 +173,7 @@ toc: false
 
       <div class="card c-ai">
         <a class="avatar-wrap av-ai" href="https://commons.wikimedia.org/wiki/File:Ilya_Sutskever_and_Sam_Altman_in_TAU_(cropped).jpg" title="Amir Zuk, CC BY-SA 4.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">IS</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg/250px-Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg" alt="Ilya Sutskever" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg/250px-Ilya_Sutskever_and_Sam_Altman_in_TAU_%28cropped%29.jpg" alt="Ilya Sutskever" onerror="avatarFallback(this,'IS')">
         </a>
         <div class="card-name">Ilya Sutskever</div>
         <div class="card-role">OpenAI co-founder / SSI</div>
@@ -184,8 +183,7 @@ toc: false
 
       <div class="card c-ai">
         <a class="avatar-wrap av-ai" href="https://commons.wikimedia.org/wiki/File:Yann_LeCun_-_2018_(cropped).jpg" title="Frankie Fouganthin, CC BY-SA 4.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">YL</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Yann_LeCun_-_2018_%28cropped%29.jpg/250px-Yann_LeCun_-_2018_%28cropped%29.jpg" alt="Yann LeCun" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Yann_LeCun_-_2018_%28cropped%29.jpg/250px-Yann_LeCun_-_2018_%28cropped%29.jpg" alt="Yann LeCun" onerror="avatarFallback(this,'YL')">
         </a>
         <div class="card-name">Yann LeCun</div>
         <div class="card-role">Meta AI / Turing Award</div>
@@ -195,8 +193,7 @@ toc: false
 
       <div class="card c-ai">
         <a class="avatar-wrap av-ai" href="https://commons.wikimedia.org/wiki/File:Geoffrey_E._Hinton,_2024_Nobel_Prize_Laureate_in_Physics.jpg" title="Annika Bergman Rosamond / Nobel Prize Outreach, CC BY-SA 4.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">GH</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg/250px-Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg" alt="Geoffrey Hinton" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg/250px-Geoffrey_E._Hinton%2C_2024_Nobel_Prize_Laureate_in_Physics.jpg" alt="Geoffrey Hinton" onerror="avatarFallback(this,'GH')">
         </a>
         <div class="card-name">Geoffrey Hinton</div>
         <div class="card-role">Godfather of Deep Learning</div>
@@ -206,8 +203,7 @@ toc: false
 
       <div class="card c-ai">
         <a class="avatar-wrap av-ai" href="https://commons.wikimedia.org/wiki/File:Andrew_Ng.png" title="The Source, CC BY 3.0 US, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">AN</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Andrew_Ng.png/250px-Andrew_Ng.png" alt="Andrew Ng" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Andrew_Ng.png/250px-Andrew_Ng.png" alt="Andrew Ng" onerror="avatarFallback(this,'AN')">
         </a>
         <div class="card-name">Andrew Ng</div>
         <div class="card-role">Google Brain · Coursera · DeepLearning.AI</div>
@@ -216,7 +212,7 @@ toc: false
       </div>
 
     </div>
-  </div><!-- /AI -->
+  </div>
 
   <div class="divider"></div>
 
@@ -228,8 +224,7 @@ toc: false
     <div class="cards">
       <div class="card c-phil">
         <a class="avatar-wrap av-phil" href="https://commons.wikimedia.org/wiki/File:Portrait_of_Marcus_Aurelius.jpg" title="Marie-Lan Nguyen, Public domain, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">MA</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Portrait_of_Marcus_Aurelius.jpg/250px-Portrait_of_Marcus_Aurelius.jpg" alt="Marcus Aurelius" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Portrait_of_Marcus_Aurelius.jpg/250px-Portrait_of_Marcus_Aurelius.jpg" alt="Marcus Aurelius" onerror="avatarFallback(this,'MA')">
         </a>
         <div class="card-name">Marcus Aurelius</div>
         <div class="card-role">Roman Emperor · Stoic</div>
@@ -238,8 +233,7 @@ toc: false
       </div>
       <div class="card c-phil">
         <a class="avatar-wrap av-phil" href="https://commons.wikimedia.org/wiki/File:Hannah_Arendt_1975_(cropped).jpg" title="Dürr / Spiegel, CC BY-SA 3.0 DE, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">HA</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hannah_Arendt_1975_%28cropped%29.jpg/250px-Hannah_Arendt_1975_%28cropped%29.jpg" alt="Hannah Arendt" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hannah_Arendt_1975_%28cropped%29.jpg/250px-Hannah_Arendt_1975_%28cropped%29.jpg" alt="Hannah Arendt" onerror="avatarFallback(this,'HA')">
         </a>
         <div class="card-name">Hannah Arendt</div>
         <div class="card-role">Political Philosopher</div>
@@ -247,7 +241,7 @@ toc: false
         <span class="card-tag tag-phil">Systems &amp; power</span>
       </div>
     </div>
-  </div><!-- /Philosophy -->
+  </div>
 
   <!-- Economics -->
   <div class="domain-block">
@@ -257,18 +251,16 @@ toc: false
     <div class="cards">
       <div class="card c-econ">
         <a class="avatar-wrap av-econ" href="https://commons.wikimedia.org/wiki/File:Daniel_Kahneman_(3283955327).jpg" title="Fronteiras do Pensamento, CC BY-SA 2.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">DK</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Daniel_Kahneman_%283283955327%29.jpg/250px-Daniel_Kahneman_%283283955327%29.jpg" alt="Daniel Kahneman" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Daniel_Kahneman_%283283955327%29.jpg/250px-Daniel_Kahneman_%283283955327%29.jpg" alt="Daniel Kahneman" onerror="avatarFallback(this,'DK')">
         </a>
         <div class="card-name">Daniel Kahneman</div>
         <div class="card-role">Nobel Laureate · Behavioral Econ</div>
-        <div class="card-skill">System 1 vs. System 2 thinking: knowing when to trust fast intuition vs. slow deliberation. Critical for working with AI outputs.</div>
+        <div class="card-skill">System 1 vs. System 2: knowing when to trust fast intuition vs. slow deliberation. Critical for working with AI outputs.</div>
         <span class="card-tag tag-econ">Cognitive bias</span>
       </div>
       <div class="card c-econ">
         <a class="avatar-wrap av-econ" href="https://commons.wikimedia.org/wiki/File:Clayton_Christensen_World_Economic_Forum_2013.jpg" title="World Economic Forum, CC BY-SA 2.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">CC</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Clayton_Christensen_World_Economic_Forum_2013.jpg/250px-Clayton_Christensen_World_Economic_Forum_2013.jpg" alt="Clayton Christensen" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Clayton_Christensen_World_Economic_Forum_2013.jpg/250px-Clayton_Christensen_World_Economic_Forum_2013.jpg" alt="Clayton Christensen" onerror="avatarFallback(this,'CC')">
         </a>
         <div class="card-name">Clayton Christensen</div>
         <div class="card-role">Disruption Theory</div>
@@ -276,7 +268,7 @@ toc: false
         <span class="card-tag tag-econ">Disruption framework</span>
       </div>
     </div>
-  </div><!-- /Economics -->
+  </div>
 
   <!-- Art -->
   <div class="domain-block">
@@ -286,8 +278,7 @@ toc: false
     <div class="cards">
       <div class="card c-art">
         <a class="avatar-wrap av-art" href="https://commons.wikimedia.org/wiki/File:Leonardo_self.jpg" title="Leonardo da Vinci, Public domain, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">LV</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/250px-Leonardo_self.jpg" alt="Leonardo da Vinci" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/250px-Leonardo_self.jpg" alt="Leonardo da Vinci" onerror="avatarFallback(this,'LV')">
         </a>
         <div class="card-name">Leonardo da Vinci</div>
         <div class="card-role">Renaissance Polymath</div>
@@ -296,8 +287,7 @@ toc: false
       </div>
       <div class="card c-art">
         <a class="avatar-wrap av-art" href="https://commons.wikimedia.org/wiki/File:Ursula_Le_Guin_(3551195631)_(cropped).jpg" title="Hajor, CC BY-SA 3.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">UL</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg/250px-Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg" alt="Ursula K. Le Guin" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg/250px-Ursula_Le_Guin_%283551195631%29_%28cropped%29.jpg" alt="Ursula K. Le Guin" onerror="avatarFallback(this,'UL')">
         </a>
         <div class="card-name">Ursula K. Le Guin</div>
         <div class="card-role">Science Fiction Author</div>
@@ -305,7 +295,7 @@ toc: false
         <span class="card-tag tag-art">Speculative systems</span>
       </div>
     </div>
-  </div><!-- /Art -->
+  </div>
 
   <!-- Science -->
   <div class="domain-block">
@@ -315,8 +305,7 @@ toc: false
     <div class="cards">
       <div class="card c-sci">
         <a class="avatar-wrap av-sci" href="https://commons.wikimedia.org/wiki/File:Richard_Feynman_1959.png" title="Caltech, Public domain, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">RF</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Richard_Feynman_1959.png/250px-Richard_Feynman_1959.png" alt="Richard Feynman" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Richard_Feynman_1959.png/250px-Richard_Feynman_1959.png" alt="Richard Feynman" onerror="avatarFallback(this,'RF')">
         </a>
         <div class="card-name">Richard Feynman</div>
         <div class="card-role">Physicist · Educator</div>
@@ -325,8 +314,7 @@ toc: false
       </div>
       <div class="card c-sci">
         <a class="avatar-wrap av-sci" href="https://commons.wikimedia.org/wiki/File:Carl_Sagan_Planetary_Society.JPG" title="The Planetary Society, CC BY-SA 3.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">CS</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Carl_Sagan_Planetary_Society.JPG/250px-Carl_Sagan_Planetary_Society.JPG" alt="Carl Sagan" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Carl_Sagan_Planetary_Society.JPG/250px-Carl_Sagan_Planetary_Society.JPG" alt="Carl Sagan" onerror="avatarFallback(this,'CS')">
         </a>
         <div class="card-name">Carl Sagan</div>
         <div class="card-role">Astronomer · Communicator</div>
@@ -334,7 +322,7 @@ toc: false
         <span class="card-tag tag-sci">Critical scepticism</span>
       </div>
     </div>
-  </div><!-- /Science -->
+  </div>
 
   <!-- Psychology -->
   <div class="domain-block">
@@ -344,8 +332,7 @@ toc: false
     <div class="cards">
       <div class="card c-psych">
         <a class="avatar-wrap av-psych" href="https://commons.wikimedia.org/wiki/File:Viktor_Frankl2.jpg" title="Prof. Dr. Franz Vesely, CC BY-SA 3.0 AT, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">VF</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Viktor_Frankl2.jpg/250px-Viktor_Frankl2.jpg" alt="Viktor Frankl" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Viktor_Frankl2.jpg/250px-Viktor_Frankl2.jpg" alt="Viktor Frankl" onerror="avatarFallback(this,'VF')">
         </a>
         <div class="card-name">Viktor Frankl</div>
         <div class="card-role">Logotherapy · Holocaust Survivor</div>
@@ -354,8 +341,7 @@ toc: false
       </div>
       <div class="card c-psych">
         <a class="avatar-wrap av-psych" href="https://commons.wikimedia.org/wiki/File:Carol_Dweck_for_Innovation_documentary.jpg" title="Innovation documentary, CC BY 3.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">CD</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Carol_Dweck_for_Innovation_documentary.jpg/250px-Carol_Dweck_for_Innovation_documentary.jpg" alt="Carol Dweck" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Carol_Dweck_for_Innovation_documentary.jpg/250px-Carol_Dweck_for_Innovation_documentary.jpg" alt="Carol Dweck" onerror="avatarFallback(this,'CD')">
         </a>
         <div class="card-name">Carol Dweck</div>
         <div class="card-role">Stanford Psychologist</div>
@@ -363,7 +349,7 @@ toc: false
         <span class="card-tag tag-psych">Growth mindset</span>
       </div>
     </div>
-  </div><!-- /Psychology -->
+  </div>
 
   <!-- Political Leadership -->
   <div class="domain-block">
@@ -373,8 +359,7 @@ toc: false
     <div class="cards">
       <div class="card c-pol">
         <a class="avatar-wrap av-pol" href="https://commons.wikimedia.org/wiki/File:Nelson_Mandela-2008_(edit).jpg" title="South Africa The Good News, CC BY 2.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">NM</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Nelson_Mandela-2008_%28edit%29.jpg/250px-Nelson_Mandela-2008_%28edit%29.jpg" alt="Nelson Mandela" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Nelson_Mandela-2008_%28edit%29.jpg/250px-Nelson_Mandela-2008_%28edit%29.jpg" alt="Nelson Mandela" onerror="avatarFallback(this,'NM')">
         </a>
         <div class="card-name">Nelson Mandela</div>
         <div class="card-role">President of South Africa</div>
@@ -383,8 +368,7 @@ toc: false
       </div>
       <div class="card c-pol">
         <a class="avatar-wrap av-pol" href="https://commons.wikimedia.org/wiki/File:Vaclav_Havel.jpg" title="Krokodyl, CC BY-SA 3.0, via Wikimedia Commons" target="_blank">
-          <span class="avatar-fallback">VH</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Vaclav_Havel.jpg/250px-Vaclav_Havel.jpg" alt="Václav Havel" onerror="this.style.display='none'">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Vaclav_Havel.jpg/250px-Vaclav_Havel.jpg" alt="Václav Havel" onerror="avatarFallback(this,'VH')">
         </a>
         <div class="card-name">Václav Havel</div>
         <div class="card-role">Playwright · Czech President</div>
@@ -392,11 +376,11 @@ toc: false
         <span class="card-tag tag-pol">Truth under power</span>
       </div>
     </div>
-  </div><!-- /Political Leadership -->
+  </div>
 
   <div class="inf-footer">
     <strong>Common thread across all 18:</strong> deep observational patience · comfort with uncertainty · skepticism of surface appearances · systems thinking<br>
     <small>Photos via <a href="https://commons.wikimedia.org" target="_blank">Wikimedia Commons</a> — click any portrait for full attribution · All images Creative Commons licensed</small>
   </div>
 
-</div><!-- /infographic-wrap -->
+</div>
