@@ -3,7 +3,6 @@ title: "Minds that matter"
 date: 2026-06-06
 slug: "Minds that matter"
 categories: [future]
-toc: false
 ---
 
 <style>
@@ -42,14 +41,22 @@ toc: false
     text-align: center;
   }
 
+  /* Avatar container — fixed 72×72 circle */
   .infographic-wrap .avatar-link {
     display: block; margin-bottom: 10px; border-radius: 50%;
     overflow: hidden; width: 72px; height: 72px; flex-shrink: 0; border: 3px solid;
   }
-  .infographic-wrap .avatar-link img { width: 72px; height: 72px; object-fit: cover; object-position: center top; display: block; }
+  /* All photos forced to identical square crop */
+  .infographic-wrap .avatar-link img {
+    width: 72px; height: 72px;
+    object-fit: cover; object-position: center top;
+    display: block;
+  }
+  /* Fallback initials badge — hidden by default via CSS, shown by JS on error */
   .infographic-wrap .avatar-fallback {
+    display: none;                          /* ← CSS hides it; JS overrides to flex */
     width: 72px; height: 72px; border-radius: 50%; margin-bottom: 10px;
-    border: 3px solid; display: flex; align-items: center; justify-content: center;
+    border: 3px solid; align-items: center; justify-content: center;
     font-size: 20px; font-weight: 800; color: #fff; flex-shrink: 0;
   }
 
