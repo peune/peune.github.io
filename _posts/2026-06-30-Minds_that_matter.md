@@ -3,9 +3,6 @@ title: "Minds that matter"
 date: 2026-06-06
 slug: "Minds that matter"
 categories: [future]
-tags: []
-image:
-  alt: 
 ---
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
