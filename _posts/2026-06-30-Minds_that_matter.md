@@ -1,5 +1,4 @@
 ---
-layout: page
 title: "Minds that matter"
 date: 2026-06-30
 slug: "Minds that matter"
