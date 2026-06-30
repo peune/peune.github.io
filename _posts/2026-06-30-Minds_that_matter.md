@@ -3,6 +3,7 @@ title: "Minds that matter"
 date: 2026-06-06
 slug: "Minds that matter"
 categories: [future]
+toc: false
 ---
 
 <style>
