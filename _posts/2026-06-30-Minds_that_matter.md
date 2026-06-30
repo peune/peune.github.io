@@ -6,7 +6,6 @@ categories: [future]
 toc: false
 ---
 
-
 <style>
   .infographic-wrap * { box-sizing: border-box; }
   .infographic-wrap {
@@ -34,11 +33,11 @@ toc: false
     display: flex; flex-direction: column; align-items: center; text-align: center;
   }
 
-  /* Avatar frame — rounded rectangle, background-image approach bypasses Bootstrap img rules */
+  /* Avatar frame — circle, background-image approach bypasses Bootstrap img rules */
   .infographic-wrap .avatar-wrap {
     display: block;
-    width: 72px; height: 88px;
-    border-radius: 12px; overflow: hidden;
+    width: 72px; height: 72px;
+    border-radius: 50%; overflow: hidden;
     border: 3px solid;
     margin-bottom: 10px; flex-shrink: 0;
     background-size: cover;
@@ -48,7 +47,7 @@ toc: false
   /* Fallback span — injected by JS only when image fails */
   .infographic-wrap .avatar-fallback {
     display: flex;
-    width: 72px; height: 88px;
+    width: 72px; height: 72px;
     align-items: center; justify-content: center;
     font-size: 20px; font-weight: 800; color: #fff;
   }
