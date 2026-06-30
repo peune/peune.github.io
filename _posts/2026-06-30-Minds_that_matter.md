@@ -6,6 +6,8 @@ categories: [future]
 toc: false
 ---
 
+วันก่อนนั่งคุยกับคุณ Claude เรื่องคนสำคัญต่าง ๆ และมีใครบ้างที่มี skill ที่น่าจะมีประโยชน์ในอนาคต วันนี้กลับมาอ่านแล้วเลยลองให้มัน gen เป็น infographics ให้ ออกมาสวยดี
+
 <style>
   .infographic-wrap * { box-sizing: border-box; }
   .infographic-wrap {
