@@ -1,0 +1,1319 @@
+<title>Spectral Field</title>
+<style>
+  :root {
+    --bg:      #05080c;
+    --panel:   #0b1118;
+    --panel-2: #111a23;
+    --rule:    #1d2a35;
+    --ink:     #dce9f2;
+    --muted:   #6f8493;
+    --drums:   #ff2e63;
+    --bass:    #a05cff;
+    --melody:  #17e9ff;
+    --air:     #6cff9e;
+    --mono: ui-monospace, "SFMono-Regular", "DejaVu Sans Mono", Menlo, monospace;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); font-size: 14px; -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 22px 22px 60px; }
+
+  header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+  .sub { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.16em;
+         text-transform: uppercase; color: var(--muted); }
+
+  .stage { display: grid; grid-template-columns: 1fr 260px; gap: 18px; align-items: start; }
+  @media (max-width: 1040px) { .stage { grid-template-columns: 1fr; } }
+
+  .screen { position: relative; background: #04060a; border: 1px solid var(--rule);
+            border-radius: 4px; overflow: hidden; aspect-ratio: 16 / 9; }
+  canvas { display: block; width: 100%; height: 100%; }
+
+  /* drop zone sits over the canvas until a file is loaded */
+  .drop { position: absolute; inset: 0; display: flex; flex-direction: column;
+          align-items: center; justify-content: center; gap: 14px; text-align: center;
+          padding: 24px; background: #04060a; transition: background .15s; }
+  .drop.hide { display: none; }
+  .drop.over { background: #0a1620; }
+  .drop h2 { margin: 0; font-size: 17px; font-weight: 600; }
+  .drop p { margin: 0; color: var(--muted); max-width: 44ch; line-height: 1.5; }
+  .drop small { color: var(--muted); font-family: var(--mono); font-size: 10.5px;
+                letter-spacing: 0.08em; }
+
+  button, select, input[type=range] { font-family: inherit; font-size: 13px; color: var(--ink); }
+  .btn { background: var(--panel-2); border: 1px solid var(--rule); border-radius: 3px;
+         padding: 9px 16px; cursor: pointer; transition: background .12s, border-color .12s; }
+  .btn:hover { background: #18242f; border-color: #2c3e4d; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.primary { background: #17323d; border-color: #24525f; }
+  .btn.primary:hover { background: #1d4150; }
+  .btn.rec { border-color: #5d1f2e; }
+  .btn.rec.on { background: #4a1421; border-color: #a02540; }
+
+  .panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px;
+           padding: 16px; display: flex; flex-direction: column; gap: 15px; }
+  .panel h3 { margin: 0; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+              text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+                 text-transform: uppercase; color: var(--muted);
+                 display: flex; justify-content: space-between; }
+  select { width: 100%; background: var(--panel-2); border: 1px solid var(--rule);
+           border-radius: 3px; padding: 8px 9px; }
+  input[type=range] { width: 100%; accent-color: #2ea9c4; }
+  .note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .note b { color: var(--ink); font-weight: 600; }
+
+  .transport { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .seek { flex: 1 1 auto; }
+  .time { font-family: var(--mono); font-size: 12px; color: var(--muted);
+          font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .bar { height: 3px; background: var(--panel-2); border-radius: 2px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; background: #2ea9c4; transition: width .1s; }
+  .status { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 8px;
+            min-height: 16px; }
+  .err { color: #ff6b83; }
+
+  .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+  .legend div { display: flex; align-items: center; gap: 6px; font-family: var(--mono);
+                font-size: 10px; letter-spacing: 0.06em; color: var(--muted); }
+  .legend i { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+  footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--rule);
+           font-family: var(--mono); font-size: 10.5px; color: var(--muted); line-height: 1.7; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Spectral Field</h1>
+    <span class="sub">four-channel audio visualiser · runs entirely in this tab</span>
+  </header>
+
+  <div class="stage">
+    <div>
+      <div class="screen">
+        <canvas id="cv"></canvas>
+        <div class="drop" id="drop">
+          <h2>Drop an audio file here</h2>
+          <p>It is decoded, separated and drawn in your browser. Nothing is uploaded
+             and nothing leaves this tab.</p>
+          <button class="btn primary" id="pick">Choose a file</button>
+          <small>MP3 · WAV · FLAC · M4A · OGG</small>
+        </div>
+      </div>
+
+      <div class="transport">
+        <button class="btn" id="play" disabled>Play</button>
+        <input type="range" class="seek" id="seek" min="0" max="1000" value="0" disabled>
+        <span class="time" id="time">00:00.00 / 00:00.00</span>
+      </div>
+      <div class="bar" id="barwrap" hidden><i id="bar"></i></div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <aside class="panel">
+      <h3>Layout</h3>
+      <div class="field">
+        <select id="layout">
+          <option value="lanes">Lanes — scrolling waveforms</option>
+          <option value="radial">Radial — concentric rings</option>
+          <option value="terrain">Terrain — isometric spectrogram</option>
+          <option value="meters">Meters — four ring gauges</option>
+          <option value="ribbon">Ribbon — woven history</option>
+          <option value="quadrants">Quadrants — waves to the rim</option>
+          <option value="chroma">Chroma — circle of fifths</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Window <span id="winVal">4.0 s</span></label>
+        <input type="range" id="win" min="1" max="8" step="0.5" value="4">
+      </div>
+      <div class="field">
+        <label>Intensity <span id="gainVal">1.00</span></label>
+        <input type="range" id="gain" min="0.4" max="2" step="0.05" value="1">
+      </div>
+      <div class="field">
+        <label>Terrain colour</label>
+        <select id="tcolor">
+          <option value="lane">By channel</option>
+          <option value="none">White on black</option>
+        </select>
+      </div>
+
+      <h3>Channels</h3>
+      <div class="legend">
+        <div><i style="background:var(--drums)"></i>DRUMS</div>
+        <div><i style="background:var(--bass)"></i>BASS</div>
+        <div><i style="background:var(--melody)"></i>MELODY</div>
+        <div><i style="background:var(--air)"></i>AIR</div>
+      </div>
+      <p class="note">Drums are separated from the mix by <b>harmonic/percussive
+        masking</b>, not by frequency — so a kick and a bassline in the same octave
+        end up on different channels.</p>
+
+      <h3>Export</h3>
+      <button class="btn" id="snap" disabled>Save frame (PNG)</button>
+      <button class="btn rec" id="rec" disabled>Record video</button>
+      <p class="note" id="recnote">Recording captures the canvas and audio in real
+        time, so it takes as long as the track. WebM — Chrome and Firefox.</p>
+    </aside>
+  </div>
+
+  <footer>
+    ANALYSIS · 32 kHz · 1024-point FFT · 256-sample hop · 125 frames per second<br>
+    CHANNELS · DRUMS percussive 60–16 000 Hz · BASS 20–150 · MELODY 150–2 000 · AIR 2 000–14 000<br>
+    CHROMA · second pass · 8192-point FFT · spectral peaks only · Krumhansl key profiles
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+/* ==========================================================================
+   1. FFT — iterative radix-2, real input, magnitude out
+   ========================================================================== */
+
+class FFT {
+  constructor(n) {
+    this.n = n;
+    this.levels = Math.log2(n) | 0;
+    this.cos = new Float32Array(n / 2);
+    this.sin = new Float32Array(n / 2);
+    for (let i = 0; i < n / 2; i++) {
+      this.cos[i] = Math.cos(2 * Math.PI * i / n);
+      this.sin[i] = Math.sin(2 * Math.PI * i / n);
+    }
+    this.rev = new Uint32Array(n);
+    for (let i = 0; i < n; i++) {
+      let x = i, r = 0;
+      for (let j = 0; j < this.levels; j++) { r = (r << 1) | (x & 1); x >>= 1; }
+      this.rev[i] = r;
+    }
+    this.re = new Float32Array(n);
+    this.im = new Float32Array(n);
+  }
+  /** magnitude spectrum (n/2+1 bins) of the real signal already in this.re */
+  magnitude(out) {
+    const { n, re, im, cos, sin, rev } = this;
+    for (let i = 0; i < n; i++) { const j = rev[i]; if (j > i) { const t = re[i]; re[i] = re[j]; re[j] = t; } }
+    im.fill(0);
+    for (let size = 2; size <= n; size <<= 1) {
+      const half = size >> 1, step = n / size;
+      for (let i = 0; i < n; i += size) {
+        for (let j = i, k = 0; j < i + half; j++, k += step) {
+          const l = j + half;
+          const tre = re[l] * cos[k] + im[l] * sin[k];
+          const tim = -re[l] * sin[k] + im[l] * cos[k];
+          re[l] = re[j] - tre; im[l] = im[j] - tim;
+          re[j] += tre;        im[j] += tim;
+        }
+      }
+    }
+    for (let b = 0; b <= n / 2; b++) out[b] = Math.hypot(re[b], im[b]);
+  }
+}
+
+/* ==========================================================================
+   2. Analysis
+   --------------------------------------------------------------------------
+   One streaming pass over the spectrogram. Harmonic content is smooth along
+   time, percussive content is smooth along frequency; smoothing each axis and
+   building soft Wiener masks separates the two. The Python renderer uses
+   median filters here — a browser gets running means instead, which is a few
+   hundred times cheaper and separates nearly as cleanly at this hop size.
+
+   Nothing but the derived per-frame arrays is kept, so memory stays flat no
+   matter how long the track is.
+   ========================================================================== */
+
+const SR = 32000, NFFT = 1024, HOP = 256, NBIN = NFFT / 2 + 1;
+// Chroma needs a second, much finer pass: at a 1024-point FFT a bin is 31 Hz,
+// and a semitone down at C3 is 8 Hz — the main spectrogram simply cannot tell
+// two adjacent notes apart. 8192 points buys 3.9 Hz bins; harmony moves slowly
+// enough that a 2048-sample hop (15.6 fps) loses nothing.
+const CFFT = 8192, CHOP = 2048, CBIN = CFFT / 2 + 1;
+const CLO = 100, CHI = 3000;      // usable range at this resolution
+const AFPS = SR / HOP;                      // 125 analysis frames per second
+const KT = 17, KF = 17;                     // smoothing widths, in frames / bins
+
+const LANES = [
+  { key: "drums",  label: "DRUMS",  lo: 60,   hi: 16000, comp: "p", color: "#ff2e63" },
+  { key: "bass",   label: "BASS",   lo: 20,   hi: 150,   comp: "h", color: "#a05cff" },
+  { key: "melody", label: "MELODY", lo: 150,  hi: 2000,  comp: "h", color: "#17e9ff" },
+  { key: "air",    label: "AIR",    lo: 2000, hi: 14000, comp: "h", color: "#6cff9e" },
+];
+const NL = 4;
+const TCOLS = 140;          // terrain frequency bands
+const SUBK = 64;            // sub-bands per channel (quadrants / ribbon)
+
+const binHz = SR / NFFT;
+const hzBin = (f) => Math.max(0, Math.min(NBIN - 1, Math.round(f / binHz)));
+
+function logEdges(lo, hi, k) {
+  const e = new Float64Array(k + 1);
+  for (let i = 0; i <= k; i++) e[i] = lo * Math.pow(hi / lo, i / k);
+  return e;
+}
+
+async function analyse(buffer, onProgress) {
+  // --- resample to a fixed rate, mono -------------------------------------
+  const len = Math.ceil(buffer.duration * SR);
+  const off = new OfflineAudioContext(1, len, SR);
+  const src = off.createBufferSource();
+  src.buffer = buffer;
+  src.connect(off.destination);
+  src.start();
+  const mono = (await off.startRendering()).getChannelData(0);
+
+  const N = Math.max(1, Math.floor((mono.length - NFFT) / HOP) + 1);
+  const fft = new FFT(NFFT);
+  const win = new Float32Array(NFFT);
+  for (let i = 0; i < NFFT; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / NFFT);
+
+  // ring buffer of the last KT spectra, plus a running sum per bin
+  const ring = new Float32Array(KT * NBIN);
+  const tsum = new Float64Array(NBIN);
+  const half = KT >> 1;
+
+  // outputs
+  const env  = Array.from({ length: NL }, () => new Float32Array(N));
+  const sub  = Array.from({ length: NL }, () => new Float32Array(SUBK * N));
+  const terr = new Float32Array(TCOLS * N);
+  const own  = new Uint8Array(TCOLS * N);
+
+  // precomputed bin ranges
+  const laneBins = LANES.map(l => [hzBin(l.lo), hzBin(l.hi)]);
+  const tEdge = logEdges(40, 14000, TCOLS).map(hzBin);
+  const sEdge = LANES.map(l => logEdges(Math.max(l.lo, 20), l.hi, SUBK).map(hzBin));
+
+  const mag = new Float32Array(NBIN);
+  const H = new Float32Array(NBIN), P = new Float32Array(NBIN);
+  const hm = new Float32Array(NBIN), pm = new Float32Array(NBIN);
+  const laneMag = [new Float32Array(NBIN), new Float32Array(NBIN),
+                   new Float32Array(NBIN), new Float32Array(NBIN)];
+
+  let written = 0;
+  for (let f = 0; f < N + half; f++) {
+    if (f < N) {
+      const o = f * HOP;
+      for (let i = 0; i < NFFT; i++) fft.re[i] = (mono[o + i] || 0) * win[i];
+      fft.magnitude(mag);
+    } else {
+      mag.fill(0);                                  // flush the ring at the end
+    }
+    const slot = f % KT;
+    const base = slot * NBIN;
+    for (let b = 0; b < NBIN; b++) { tsum[b] += mag[b] - ring[base + b]; ring[base + b] = mag[b]; }
+
+    const g = f - half;                             // the frame now centred
+    if (g < 0) continue;
+
+    // harmonic estimate: mean along time. percussive: mean along frequency.
+    const cur = ((g + half) % KT) * NBIN;
+    const inv = 1 / KT;
+    for (let b = 0; b < NBIN; b++) H[b] = tsum[b] * inv;
+
+    let run = 0;
+    const kh = KF >> 1;
+    for (let b = 0; b < Math.min(kh, NBIN); b++) run += ring[cur + b];
+    for (let b = 0; b < NBIN; b++) {
+      const add = b + kh, rem = b - kh - 1;
+      if (add < NBIN) run += ring[cur + add];
+      if (rem >= 0) run -= ring[cur + rem];
+      const cnt = Math.min(b + kh, NBIN - 1) - Math.max(b - kh, 0) + 1;
+      P[b] = run / cnt;
+    }
+
+    for (let b = 0; b < NBIN; b++) {
+      const m = ring[cur + b];
+      const h2 = H[b] * H[b], p2 = P[b] * P[b], tot = h2 + p2 + 1e-12;
+      hm[b] = m * (h2 / tot);
+      pm[b] = m * (p2 / tot);
+    }
+    for (let i = 0; i < NL; i++) {
+      const s = LANES[i].comp === "p" ? pm : hm;
+      laneMag[i].set(s);
+    }
+
+    // per-channel envelope
+    for (let i = 0; i < NL; i++) {
+      const [b0, b1] = laneBins[i]; let s = 0;
+      const src2 = laneMag[i];
+      for (let b = b0; b <= b1; b++) s += src2[b];
+      env[i][g] = s;
+    }
+    // terrain heights, and which channel owns each band
+    for (let c = 0; c < TCOLS; c++) {
+      const b0 = tEdge[c], b1 = Math.max(tEdge[c + 1], b0 + 1);
+      let mx = 0;
+      for (let b = b0; b < b1 && b < NBIN; b++) if (ring[cur + b] > mx) mx = ring[cur + b];
+      terr[c * N + g] = mx;
+      let best = 0, bv = -1;
+      for (let i = 0; i < NL; i++) {
+        // a channel can only claim bands inside its own range, otherwise the
+        // three harmonic channels are comparing identical spectra
+        const a0 = Math.max(b0, laneBins[i][0]);
+        const a1 = Math.min(b1, laneBins[i][1] + 1);
+        let s = 0; const src3 = laneMag[i];
+        for (let b = a0; b < a1 && b < NBIN; b++) s += src3[b];
+        if (s > bv) { bv = s; best = i; }
+      }
+      own[c * N + g] = best;
+    }
+    // per-channel sub-bands
+    for (let i = 0; i < NL; i++) {
+      const e = sEdge[i], src4 = laneMag[i];
+      for (let k = 0; k < SUBK; k++) {
+        const b0 = e[k], b1 = Math.max(e[k + 1], b0 + 1);
+        let mx = 0;
+        for (let b = b0; b < b1 && b < NBIN; b++) if (src4[b] > mx) mx = src4[b];
+        sub[i][k * N + g] = mx;
+      }
+    }
+
+    written = g + 1;
+    if ((f & 255) === 0) {
+      onProgress(0.75 * f / (N + half));
+      await new Promise(r => setTimeout(r, 0));      // keep the page responsive
+    }
+  }
+
+  // --- chroma: a second pass at high frequency resolution ------------------
+  const cf = new FFT(CFFT);
+  const cwin = new Float32Array(CFFT);
+  for (let i = 0; i < CFFT; i++) cwin[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / CFFT);
+  const cbinHz = SR / CFFT;
+  const pcOf = new Int8Array(CBIN).fill(-1);
+  for (let b = 1; b < CBIN; b++) {
+    const fq = b * cbinHz;
+    if (fq >= CLO && fq <= CHI) {
+      const midi = 69 + 12 * Math.log2(fq / 440);
+      pcOf[b] = ((Math.round(midi) % 12) + 12) % 12;
+    }
+  }
+  const CN = Math.max(1, Math.floor((mono.length - CFFT) / CHOP) + 1);
+  const chroma = new Float32Array(12 * CN);
+  const tonal = new Float32Array(CN);
+  const cmag = new Float32Array(CBIN);
+
+  for (let f = 0; f < CN; f++) {
+    const o = f * CHOP;
+    for (let i = 0; i < CFFT; i++) cf.re[i] = (mono[o + i] || 0) * cwin[i];
+    cf.magnitude(cmag);
+    // count only spectral peaks: a partial is a local maximum, broadband
+    // percussion is not, so this cheaply keeps drums out of the harmony
+    for (let b = 1; b < CBIN - 1; b++) {
+      const pc = pcOf[b];
+      if (pc < 0) continue;
+      const m = cmag[b];
+      if (m > cmag[b - 1] && m >= cmag[b + 1]) chroma[pc * CN + f] += m;
+    }
+    let mx = 0, sum = 0;
+    for (let p = 0; p < 12; p++) { const v = chroma[p * CN + f]; if (v > mx) mx = v; sum += v; }
+    if (mx > 0) for (let p = 0; p < 12; p++) chroma[p * CN + f] /= mx;
+    // how peaked the chroma is: a clear chord scores high, noise scores low
+    let ent = 0;
+    if (sum > 0) {
+      for (let p = 0; p < 12; p++) {
+        const q = chroma[p * CN + f] * mx / sum;
+        if (q > 1e-9) ent -= q * Math.log(q);
+      }
+      tonal[f] = Math.max(0, 1 - ent / Math.log(12));
+    }
+    if ((f & 63) === 0) {
+      onProgress(0.75 + 0.25 * f / CN);
+      await new Promise(r => setTimeout(r, 0));
+    }
+  }
+
+  // --- normalise ----------------------------------------------------------
+  for (let i = 0; i < NL; i++) normaliseEnv(env[i]);
+  for (let i = 0; i < NL; i++) normaliseBands(sub[i], SUBK, N);
+  normaliseBands(terr, TCOLS, N);
+
+  return { N, fps: AFPS, duration: buffer.duration, env, sub, terr, own,
+           tcols: TCOLS, subk: SUBK,
+           chroma, tonal, CN, cfps: SR / CHOP };
+}
+
+function pct(arr, p, stride = 7) {
+  const s = [];
+  for (let i = 0; i < arr.length; i += stride) s.push(arr[i]);
+  s.sort((a, b) => a - b);
+  return s[Math.min(s.length - 1, Math.max(0, Math.floor(p * (s.length - 1))))] || 0;
+}
+
+function normaliseEnv(a) {
+  const ref = pct(a, 0.995) || 1e-9;
+  for (let i = 0; i < a.length; i++) a[i] = Math.pow(Math.min(a[i] / ref, 1), 0.7);
+}
+
+/** per-band dB normalisation, blended with a global reference — purely global
+ *  and the bass is a wall that hides everything else; purely per-band and the
+ *  quiet parts of the spectrum shout as loudly as the loud ones. */
+function normaliseBands(a, K, N) {
+  const DR = 62;
+  const gRef = 20 * Math.log10(pct(a, 0.995) + 1e-9);
+  for (let k = 0; k < K; k++) {
+    const row = a.subarray(k * N, (k + 1) * N);
+    const bRef = 20 * Math.log10(pct(row, 0.97, 3) + 1e-9);
+    const ref = 0.5 * bRef + 0.5 * gRef;
+    for (let i = 0; i < N; i++) {
+      const db = 20 * Math.log10(row[i] + 1e-9);
+      row[i] = Math.max(0, Math.min(1, (db - (ref - DR)) / DR));
+    }
+  }
+}
+
+/* ==========================================================================
+   3. Drawing helpers
+   ========================================================================== */
+
+const BG = "#04060a", INK = "#e8f4ff";
+const PEAK_DECAY = 0.42;
+
+function at(arr, i, N) { return (i < 0 || i >= N) ? 0 : arr[i]; }
+
+/** decaying peak-hold, read straight out of the envelope so it never depends
+ *  on which frames were drawn before */
+function peakHold(e, c, N) {
+  const back = Math.ceil(AFPS / PEAK_DECAY);
+  let best = 0;
+  for (let j = 0; j <= back; j++) {
+    const v = at(e, c - j, N) - PEAK_DECAY * (j / AFPS);
+    if (v > best) best = v;
+  }
+  return Math.min(1, best);
+}
+
+function neonPath(ctx, build, rgb, alpha, widths) {
+  for (const [w, a] of widths) {
+    ctx.beginPath(); build();
+    ctx.lineWidth = w; ctx.strokeStyle = rgb;
+    ctx.globalAlpha = a * alpha; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+const GA0 = 215 * Math.PI / 180, GA1 = -35 * Math.PI / 180;
+
+function ringGauge(ctx, x, y, r, rgb, lvl, peak, opts = {}) {
+  const big = opts.big || false;
+  const a1 = GA0 + (GA1 - GA0) * Math.min(1, Math.max(0, lvl));
+  ctx.save();
+  // unlit track
+  ctx.beginPath(); ctx.arc(x, y, r, -GA0, -GA1, false);
+  ctx.strokeStyle = rgb; ctx.lineCap = "round";
+  ctx.globalAlpha = 0.06; ctx.lineWidth = big ? 13 : 6; ctx.stroke();
+  ctx.globalAlpha = 0.18; ctx.lineWidth = big ? 2 : 1.4; ctx.stroke();
+  // ticks
+  ctx.globalAlpha = 0.3; ctx.lineWidth = 1.1;
+  for (let i = 0; i <= 4; i++) {
+    const a = GA0 + (GA1 - GA0) * (i / 4);
+    ctx.beginPath();
+    ctx.moveTo(x + r * 1.06 * Math.cos(-a), y + r * 1.06 * Math.sin(-a));
+    ctx.lineTo(x + r * 1.2 * Math.cos(-a), y + r * 1.2 * Math.sin(-a));
+    ctx.stroke();
+  }
+  // lit arc
+  if (lvl > 0.001) {
+    for (const [w, a] of (big ? [[24, .05], [12, .13], [5, .95]] : [[11, .05], [6, .13], [2.8, .9]])) {
+      ctx.beginPath(); ctx.arc(x, y, r, -GA0, -a1, false);
+      ctx.lineWidth = w; ctx.globalAlpha = a; ctx.stroke();
+    }
+  }
+  // peak hold
+  const ap = GA0 + (GA1 - GA0) * Math.min(1, Math.max(lvl, peak));
+  ctx.globalAlpha = 0.25 + 0.65 * peak; ctx.strokeStyle = "#fff";
+  ctx.lineWidth = big ? 3 : 2.2; ctx.lineCap = "butt";
+  ctx.beginPath();
+  ctx.moveTo(x + r * 0.88 * Math.cos(-ap), y + r * 0.88 * Math.sin(-ap));
+  ctx.lineTo(x + r * 1.2 * Math.cos(-ap), y + r * 1.2 * Math.sin(-ap));
+  ctx.stroke();
+  // readout
+  const db = 20 * Math.log10(Math.max(lvl, 1e-3));
+  ctx.globalAlpha = 0.4 + 0.55 * lvl; ctx.fillStyle = rgb;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = `700 ${big ? r * 0.52 : r * 0.42}px ${MONO}`;
+  ctx.fillText(db > -59 ? (db >= 0 ? "+0" : db.toFixed(0)) : "-∞", x, y + r * 0.02);
+  ctx.globalAlpha = 0.32; ctx.font = `${Math.max(7, r * 0.16)}px ${MONO}`;
+  ctx.fillText("dB", x, y - r * (big ? 0.3 : 0.34));
+  ctx.restore();
+}
+
+const MONO = 'ui-monospace, "DejaVu Sans Mono", Menlo, monospace';
+const SANS = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+
+function chrome(ctx, W, H, S, t) {
+  ctx.save();
+  ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillStyle = INK; ctx.globalAlpha = 0.9;
+  ctx.font = `700 ${Math.round(H * 0.028)}px ${SANS}`;
+  ctx.fillText(S.title, W * 0.012, H * 0.030);
+  ctx.globalAlpha = 0.32; ctx.font = `${Math.round(H * 0.0115)}px ${MONO}`;
+  ctx.fillText("F O U R - C H A N N E L   A N A L Y S I S", W * 0.012, H * 0.072);
+  ctx.textAlign = "right"; ctx.globalAlpha = 0.75;
+  ctx.font = `${Math.round(H * 0.024)}px ${MONO}`;
+  ctx.fillText(tc(t), W * 0.988, H * 0.030);
+  ctx.restore();
+}
+
+function tc(t) {
+  const m = Math.floor(t / 60), s = t - m * 60;
+  return String(m).padStart(2, "0") + ":" + s.toFixed(2).padStart(5, "0");
+}
+
+/** gauge column down the right-hand side, shared by the polar layouts */
+function gaugeColumn(ctx, W, H, D, c, S) {
+  const r = H * 0.043, x = W - H * 0.30;
+  for (let i = 0; i < NL; i++) {
+    const y = H * (0.27 + i * 0.155);
+    const lvl = at(D.env[i], c, D.N);
+    ringGauge(ctx, x, y, r, LANES[i].color, lvl, peakHold(D.env[i], c, D.N));
+    ctx.save();
+    ctx.fillStyle = LANES[i].color; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    ctx.globalAlpha = 0.55; ctx.font = `700 ${Math.round(H * 0.0155)}px ${SANS}`;
+    ctx.fillText(LANES[i].label.split("").join(" "), x + r * 1.7, y - H * 0.012);
+    ctx.globalAlpha = 0.3; ctx.font = `${Math.round(H * 0.011)}px ${MONO}`;
+    ctx.fillText(`${LANES[i].lo} - ${LANES[i].hi} Hz`, x + r * 1.7, y + H * 0.014);
+    ctx.restore();
+  }
+}
+
+/* ==========================================================================
+   4. Layouts
+   ========================================================================== */
+
+const LAYOUTS = {};
+
+/* ---- lanes: four mirrored waveforms scrolling past a centre playhead ---- */
+LAYOUTS.lanes = (ctx, W, H, t, D, S) => {
+  const c = Math.round(t * D.fps);
+  const P = Math.min(700, Math.round(W * 0.5));
+  const step = (S.window * D.fps) / P;
+  const x0 = W * 0.135, x1 = W * 0.865;
+  const laneH = H * 0.105 * S.gain;
+
+  for (let i = 0; i < NL; i++) {
+    const cy = H * (0.20 + i * 0.20);
+    const e = D.env[i], rgb = LANES[i].color;
+    const xs = [], up = [], dn = [];
+    for (let k = 0; k < P; k++) {
+      const v = at(e, Math.round(c - P / 2 * step + k * step), D.N);
+      xs.push(x0 + (x1 - x0) * k / (P - 1));
+      up.push(cy - v * laneH); dn.push(cy + v * laneH);
+    }
+    ctx.strokeStyle = rgb;
+    ctx.globalAlpha = 0.2; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x0, cy); ctx.lineTo(x1, cy); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(xs[0], up[0]);
+    for (let k = 1; k < P; k++) ctx.lineTo(xs[k], up[k]);
+    for (let k = P - 1; k >= 0; k--) ctx.lineTo(xs[k], dn[k]);
+    ctx.closePath();
+    ctx.fillStyle = rgb; ctx.globalAlpha = 0.20; ctx.fill();
+
+    for (const [w, a] of [[9, .05], [4, .12], [1.4, .95]]) {
+      ctx.globalAlpha = a; ctx.lineWidth = w;
+      ctx.beginPath(); ctx.moveTo(xs[0], up[0]);
+      for (let k = 1; k < P; k++) ctx.lineTo(xs[k], up[k]);
+      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(xs[0], dn[0]);
+      for (let k = 1; k < P; k++) ctx.lineTo(xs[k], dn[k]);
+      ctx.stroke();
+    }
+    const lvl = at(e, c, D.N);
+    ctx.globalAlpha = 0.3 + 0.6 * lvl;
+    ctx.fillStyle = rgb; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic";
+    ctx.font = `700 ${Math.round(H * 0.0175)}px ${SANS}`;
+    ctx.fillText(LANES[i].label.split("").join(" "), x0 - W * 0.012, cy);
+    ctx.globalAlpha = 0.3; ctx.font = `${Math.round(H * 0.011)}px ${MONO}`;
+    ctx.fillText(`${LANES[i].lo} - ${LANES[i].hi} Hz`, x0 - W * 0.012, cy + H * 0.022);
+
+    ringGauge(ctx, W * 0.925, cy, H * 0.042, rgb, lvl, peakHold(e, c, D.N));
+  }
+  ctx.globalAlpha = 1;
+  const xm = (x0 + x1) / 2;
+  let pk = 0; for (let i = 0; i < NL; i++) pk = Math.max(pk, at(D.env[i], c, D.N));
+  for (const [w, a] of [[16, .02], [6, .05], [1.2, .3 + .5 * pk]]) {
+    ctx.globalAlpha = a; ctx.lineWidth = w; ctx.strokeStyle = "#fff";
+    ctx.beginPath(); ctx.moveTo(xm, H * 0.10); ctx.lineTo(xm, H * 0.94); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  chrome(ctx, W, H, S, t);
+};
+
+/* ---- radial: four concentric rings around a pulsing core ---------------- */
+LAYOUTS.radial = (ctx, W, H, t, D, S) => {
+  const c = Math.round(t * D.fps);
+  const cx = W * 0.40, cy = H * 0.53, R = H * 0.41;
+  const P = 560, step = (S.window * D.fps) / P;
+  const base = [0.93, 0.71, 0.49, 0.27], amp = 0.10 * S.gain;
+  const gap = 0.012;   // a thin break where the window wraps, not a wedge
+  let pk = 0;
+
+  for (let i = 0; i < NL; i++) {
+    const e = D.env[i], rgb = LANES[i].color;
+    const xo = [], yo = [], xi = [], yi = [];
+    for (let k = 0; k < P; k++) {
+      const th = Math.PI / 2 + ((k / (P - 1)) - 0.5) * 2 * Math.PI * (1 - gap);
+      const v = at(e, Math.round(c - P / 2 * step + k * step), D.N);
+      const ro = (base[i] + amp * v) * R, ri = (base[i] - amp * v) * R;
+      xo.push(cx + ro * Math.cos(th)); yo.push(cy - ro * Math.sin(th));
+      xi.push(cx + ri * Math.cos(th)); yi.push(cy - ri * Math.sin(th));
+    }
+    ctx.beginPath();
+    ctx.moveTo(xo[0], yo[0]);
+    for (let k = 1; k < P; k++) ctx.lineTo(xo[k], yo[k]);
+    for (let k = P - 1; k >= 0; k--) ctx.lineTo(xi[k], yi[k]);
+    ctx.closePath(); ctx.fillStyle = rgb; ctx.globalAlpha = 0.17; ctx.fill();
+
+    ctx.strokeStyle = rgb;
+    for (const [w, a] of [[9, .05], [4, .12], [1.3, .95]]) {
+      ctx.globalAlpha = a; ctx.lineWidth = w;
+      for (const [xx, yy] of [[xo, yo], [xi, yi]]) {
+        ctx.beginPath(); ctx.moveTo(xx[0], yy[0]);
+        for (let k = 1; k < P; k++) ctx.lineTo(xx[k], yy[k]);
+        ctx.stroke();
+      }
+    }
+    pk = Math.max(pk, at(e, c, D.N));
+  }
+  // core
+  ctx.globalAlpha = 1;
+  for (let j = 12; j >= 0; j--) {
+    const m = 1 + j * 0.32, r = R * (0.03 + 0.033 * pk) * m;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7);
+    ctx.fillStyle = "#dff0ff";
+    ctx.globalAlpha = j === 0 ? 0.85 : 0.03 / Math.pow(m, 1.5) * (0.5 + 1.2 * pk);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 0.3 + 0.55 * pk; ctx.strokeStyle = "#fff"; ctx.lineWidth = 1 + 2 * pk;
+  ctx.beginPath(); ctx.moveTo(cx, cy - R * 0.16); ctx.lineTo(cx, cy - R * 1.02); ctx.stroke();
+  ctx.globalAlpha = 1;
+  gaugeColumn(ctx, W, H, D, c, S);
+  chrome(ctx, W, H, S, t);
+};
+
+/* ---- terrain: isometric hidden-line spectrogram ------------------------- */
+LAYOUTS.terrain = (ctx, W, H, t, D, S) => {
+  const c = Math.round(t * D.fps);
+  const rows = Math.round(S.window * 30);
+  const cols = D.tcols;
+  const step = (S.window * D.fps) / rows;
+  const cx = W * 0.38, cy = H * 0.86, Sz = H * 0.58;
+  const CXa = Math.cos(Math.PI / 6) * Sz, CYa = Math.sin(Math.PI / 6) * Sz;
+  const HZ = H * 0.18 * S.gain, DEPTH = H * 0.045;
+  const mono = S.tcolor === "none";
+
+  const px = new Float32Array(cols), py = new Float32Array(cols);
+  for (let r = 0; r < rows; r++) {
+    const q = 1 - r / (rows - 1);                       // 1 = oldest / far
+    const fi = Math.round(c - (rows - 1 - r) * step);
+    const fade = Math.pow(0.30 + 0.70 * (r / (rows - 1)), 0.85);
+    for (let k = 0; k < cols; k++) {
+      const p = k / (cols - 1);
+      let h = (fi < 0 || fi >= D.N) ? 0 : D.terr[k * D.N + fi];
+      if (k === 0 || k === cols - 1) h = 0;
+      else if (k === 1 || k === cols - 2) h *= 0.4;
+      px[k] = cx + (p - q) * CXa;
+      py[k] = cy - (p + q) * CYa - h * HZ;
+    }
+    // filler that does the hiding, no outline. It must be fully opaque:
+    // inheriting the previous row's alpha turns the whole block transparent.
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.moveTo(px[0], py[0]);
+    for (let k = 1; k < cols; k++) ctx.lineTo(px[k], py[k]);
+    ctx.lineTo(cx + (1 - q) * CXa, cy - (1 + q) * CYa + DEPTH);
+    ctx.lineTo(cx + (0 - q) * CXa, cy - (0 + q) * CYa + DEPTH);
+    ctx.closePath(); ctx.fillStyle = BG; ctx.fill();
+
+    // ridge, split into runs of one colour
+    ctx.lineWidth = 1; ctx.globalAlpha = fade;
+    let k0 = 0;
+    while (k0 < cols - 1) {
+      const hh = (fi < 0 || fi >= D.N) ? 0 : D.terr[k0 * D.N + fi];
+      const oi = (fi < 0 || fi >= D.N || hh < 0.035) ? -1 : D.own[k0 * D.N + fi];
+      let k1 = k0 + 1;
+      if (!mono) {
+        while (k1 < cols) {
+          const h2 = (fi < 0 || fi >= D.N) ? 0 : D.terr[k1 * D.N + fi];
+          const o2 = (fi < 0 || fi >= D.N || h2 < 0.035) ? -1 : D.own[k1 * D.N + fi];
+          if (o2 !== oi) break;
+          k1++;
+        }
+      }
+      else k1 = cols;
+      ctx.beginPath(); ctx.moveTo(px[k0], py[k0]);
+      for (let k = k0 + 1; k < Math.min(k1 + 1, cols); k++) ctx.lineTo(px[k], py[k]);
+      ctx.strokeStyle = mono ? "#f2f6f8" : (oi < 0 ? "#85929b" : LANES[oi].color);
+      ctx.stroke();
+      k0 = k1;
+    }
+  }
+  // near-left face of the plinth, over every row's skirt
+  ctx.globalAlpha = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx - CXa, cy - CYa);
+  ctx.lineTo(cx - CXa, cy - CYa + DEPTH);
+  ctx.lineTo(cx, cy + DEPTH);
+  ctx.closePath();
+  ctx.fillStyle = BG; ctx.fill();
+  ctx.strokeStyle = "#fff"; ctx.lineWidth = 1; ctx.globalAlpha = 0.85; ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  ctx.save();
+  ctx.fillStyle = INK; ctx.globalAlpha = 0.3; ctx.font = `${Math.round(H * 0.012)}px ${MONO}`;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.translate(cx - CXa * 0.5, cy - CYa * 0.5 + H * 0.055); ctx.rotate(Math.PI / 6);
+  ctx.fillText("O L D E R   ←   T I M E", 0, 0); ctx.restore();
+  ctx.save();
+  ctx.fillStyle = INK; ctx.globalAlpha = 0.3; ctx.font = `${Math.round(H * 0.012)}px ${MONO}`;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.translate(cx + CXa * 0.5, cy - CYa * 0.5 + H * 0.055); ctx.rotate(-Math.PI / 6);
+  ctx.fillText("F R E Q U E N C Y   →", 0, 0); ctx.restore();
+
+  gaugeColumn(ctx, W, H, D, c, S);
+  chrome(ctx, W, H, S, t);
+};
+
+/* ---- meters: four big ring meters, no waveform -------------------------- */
+LAYOUTS.meters = (ctx, W, H, t, D, S) => {
+  const c = Math.round(t * D.fps);
+  const gap = W / 4.15;
+  const R = Math.min(H * 0.15, gap / 3.15);   // 2 x outer history radius <= gap
+  const cy = H * 0.52;
+  const NH = 190, span = S.window * D.fps;
+  for (let i = 0; i < NL; i++) {
+    const cx = W / 2 + (i - 1.5) * gap;
+    const e = D.env[i], rgb = LANES[i].color;
+    const lvl = at(e, c, D.N), pk = peakHold(e, c, D.N);
+
+    // history ring: newest at 12 o'clock, older winding clockwise
+    const rin = R * 1.22, rlen = R * 0.30 * S.gain;
+    for (let j = 0; j < NH; j++) {
+      const age = (NH - 1 - j) / NH;
+      const a = Math.PI / 2 - age * 2 * Math.PI;
+      const v = at(e, Math.round(c - age * span), D.N);
+      const ro = rin + rlen * v;
+      ctx.beginPath();
+      ctx.moveTo(cx + rin * Math.cos(a), cy - rin * Math.sin(a));
+      ctx.lineTo(cx + ro * Math.cos(a), cy - ro * Math.sin(a));
+      ctx.strokeStyle = j >= NH - 3 ? "#ffffff" : rgb;
+      ctx.lineWidth = j >= NH - 3 ? 2.4 : 1.5;
+      ctx.globalAlpha = Math.pow(0.30 + 0.70 * (j / NH), 1.1) * (0.25 + 0.75 * v);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    ringGauge(ctx, cx, cy, R, rgb, lvl, pk, { big: true });
+    ctx.fillStyle = rgb; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.globalAlpha = 0.32 + 0.6 * lvl; ctx.font = `700 ${Math.round(H * 0.021)}px ${SANS}`;
+    ctx.fillText(LANES[i].label.split("").join(" "), cx, cy - R * 1.66);
+    ctx.globalAlpha = 0.32; ctx.font = `${Math.round(H * 0.013)}px ${MONO}`;
+    ctx.fillText(`${LANES[i].lo} - ${LANES[i].hi} Hz`, cx, cy + R * 1.66);
+    ctx.globalAlpha = 0.45; ctx.fillStyle = "#fff";
+    ctx.font = `${Math.round(H * 0.014)}px ${MONO}`;
+    const pdb = 20 * Math.log10(Math.max(pk, 1e-3));
+    ctx.fillText(pdb > -59 ? `PK ${pdb.toFixed(0)}` : "PK  --", cx, cy + R * 0.34);
+    ctx.globalAlpha = 1;
+  }
+  // transport line
+  ctx.strokeStyle = INK; ctx.globalAlpha = 0.12; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(W * 0.05, H * 0.93); ctx.lineTo(W * 0.95, H * 0.93); ctx.stroke();
+  ctx.globalAlpha = 0.6; ctx.lineWidth = 2;
+  const fr = Math.min(1, t / Math.max(D.duration, 1e-6));
+  ctx.beginPath(); ctx.moveTo(W * 0.05, H * 0.93);
+  ctx.lineTo(W * 0.05 + (W * 0.9) * fr, H * 0.93); ctx.stroke();
+  ctx.globalAlpha = 1;
+  chrome(ctx, W, H, S, t);
+};
+
+/* ---- ribbon: harmonic rings stacked over recent history ----------------- */
+const RIB_PSI = [], RIB_OM = [];
+(function () {
+  let seed = 11;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  for (let i = 0; i < NL; i++) {
+    RIB_PSI.push(Array.from({ length: 6 }, () => rnd() * 2 * Math.PI));
+    RIB_OM.push(Array.from({ length: 6 }, () => (rnd() * 2 - 1) * 0.016));
+  }
+})();
+
+LAYOUTS.ribbon = (ctx, W, H, t, D, S) => {
+  const c = Math.round(t * D.fps);
+  const cx = W * 0.40, cy = H * 0.52, R0 = H * 0.32;
+  const M = 130, K = 6, NPT = 170;
+  const hist = 0.6 * D.fps;
+  const Ak = Array.from({ length: K }, (_, k) => 0.15 / Math.pow(k + 1, 0.85));
+  const grp = Math.floor(D.subk / K);
+
+  for (let i = 0; i < NL; i++) {
+    const rgb = LANES[i].color, sb = D.sub[i];
+    const Ri = R0 * (1 + (i - 1.5) * 0.10);
+    const lvl = at(D.env[i], c, D.N);
+    for (let m = 0; m < M; m++) {
+      const s = m / (M - 1);
+      const cj = c - s * hist;
+      const fi = Math.max(0, Math.min(D.N - 1, Math.round(cj)));
+      const fade = Math.pow(1 - 0.95 * s, 1.2);
+      const alpha = fade * (0.10 + 0.5 * lvl);
+      if (alpha < 0.004) continue;
+      // harmonic amplitudes from this channel's own sub-bands
+      const h = [];
+      for (let k = 0; k < K; k++) {
+        let v = 0;
+        for (let g = 0; g < grp; g++) v = Math.max(v, sb[(k * grp + g) * D.N + fi]);
+        h.push(v);
+      }
+      ctx.beginPath();
+      for (let n = 0; n <= NPT; n++) {
+        const th = 2 * Math.PI * n / NPT;
+        let r = Ri;
+        for (let k = 0; k < K; k++)
+          r += Ri * Ak[k] * h[k] * S.gain *
+               Math.sin((k + 1) * th + RIB_PSI[i][k] + RIB_OM[i][k] * cj);
+        const tau = 3 * th + i * Math.PI / 2;
+        const off = R0 * 0.13 * (s - 0.5);
+        const rad = r + off * Math.cos(tau), z = off * Math.sin(tau);
+        const x = cx + rad * Math.cos(th) + 0.10 * z;
+        const y = cy - rad * Math.sin(th) - 0.52 * z;
+        n ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = rgb;
+      ctx.globalAlpha = alpha * 0.5; ctx.lineWidth = 2.6; ctx.stroke();
+      ctx.globalAlpha = alpha;       ctx.lineWidth = 0.7; ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+  gaugeColumn(ctx, W, H, D, c, S);
+  chrome(ctx, W, H, S, t);
+};
+
+
+/* ---- chroma: the twelve pitch classes on the circle of fifths ----------- */
+// Position runs by fifths, so related keys sit next to each other and a
+// ii-V-I is a short rotation. Colour runs by chromatic pitch class, so a
+// note keeps its hue wherever it lands.
+const FIFTHS = [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5];
+const NOTE = ["C", "C♯", "D", "D♯", "E", "F",
+              "F♯", "G", "G♯", "A", "A♯", "B"];
+const PC_HUE = (pc) => `hsl(${pc * 30}, 82%, 62%)`;
+// Krumhansl-Schmuckler key profiles
+const KS_MAJ = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
+const KS_MIN = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+
+function corr(a, b) {
+  let ma = 0, mb = 0;
+  for (let i = 0; i < 12; i++) { ma += a[i]; mb += b[i]; }
+  ma /= 12; mb /= 12;
+  let num = 0, da = 0, db = 0;
+  for (let i = 0; i < 12; i++) {
+    const x = a[i] - ma, y = b[i] - mb;
+    num += x * y; da += x * x; db += y * y;
+  }
+  return (da > 0 && db > 0) ? num / Math.sqrt(da * db) : 0;
+}
+
+/** best-fitting key over a window of chroma, by profile correlation */
+function detectKey(D, cf, winFrames) {
+  const avg = new Float64Array(12);
+  let n = 0;
+  for (let f = Math.max(0, cf - winFrames); f <= cf && f < D.CN; f++) {
+    for (let p = 0; p < 12; p++) avg[p] += D.chroma[p * D.CN + f];
+    n++;
+  }
+  if (!n) return null;
+  for (let p = 0; p < 12; p++) avg[p] /= n;
+  let best = null, bv = -2;
+  const rot = new Float64Array(12);
+  for (let k = 0; k < 12; k++) {
+    for (const [prof, mode] of [[KS_MAJ, "major"], [KS_MIN, "minor"]]) {
+      for (let p = 0; p < 12; p++) rot[p] = prof[(p - k + 12) % 12];
+      const c = corr(avg, rot);
+      if (c > bv) { bv = c; best = { root: k, mode, score: c }; }
+    }
+  }
+  return best;
+}
+
+LAYOUTS.chroma = (ctx, W, H, t, D, S) => {
+  const c = Math.round(t * D.fps);
+  const cf = Math.min(D.CN - 1, Math.max(0, Math.round(t * D.cfps)));
+  const cx = W * 0.40, cy = H * 0.53, R = H * 0.37;
+  const RNODE = R * 0.46, RH0 = R * 0.60, RH1 = R * 1.0, RLAB = R * 1.13;
+
+  const now = [];
+  for (let i = 0; i < 12; i++) now.push(D.chroma[FIFTHS[i] * D.CN + cf]);
+
+  // --- history annulus: angle is pitch class, radius is age -------------
+  const M = Math.round(S.window * D.cfps * 2);
+  const ring = (RH1 - RH0) / Math.max(M, 1);
+  const seg = 2 * Math.PI / 12;
+  for (let m = 0; m < M; m++) {
+    const f = cf - m;
+    if (f < 0) break;
+    const r = RH0 + ring * (m + 0.5);
+    const fade = Math.pow(1 - m / M, 0.9);
+    for (let i = 0; i < 12; i++) {
+      const v = D.chroma[FIFTHS[i] * D.CN + f];
+      if (v < 0.12) continue;
+      const a = -(Math.PI / 2 - i * seg);
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, a - seg * 0.46, a + seg * 0.46);
+      ctx.strokeStyle = PC_HUE(FIFTHS[i]);
+      ctx.lineWidth = ring * 1.15;
+      ctx.globalAlpha = Math.min(1, Math.pow(v, 1.4) * fade);
+      ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // --- the chord: lines between pitch classes sounding together ---------
+  const pos = (i, r) => [cx + r * Math.cos(Math.PI / 2 - i * seg),
+                         cy - r * Math.sin(Math.PI / 2 - i * seg)];
+  ctx.lineCap = "round";
+  for (let i = 0; i < 12; i++) {
+    for (let j = i + 1; j < 12; j++) {
+      const w = now[i] * now[j];
+      if (w < 0.18) continue;
+      const [x1, y1] = pos(i, RNODE), [x2, y2] = pos(j, RNODE);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+      ctx.strokeStyle = "#cfe6f5";
+      ctx.globalAlpha = Math.min(0.7, Math.pow(w, 0.9) * 0.85);
+      ctx.lineWidth = 1 + 3 * w;
+      ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // --- the twelve nodes -------------------------------------------------
+  const guide = R * 0.012;
+  ctx.strokeStyle = INK; ctx.globalAlpha = 0.07; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(cx, cy, RNODE, 0, 7); ctx.stroke();
+  ctx.globalAlpha = 1;
+  for (let i = 0; i < 12; i++) {
+    const pc = FIFTHS[i], v = now[i];
+    const [x, y] = pos(i, RNODE);
+    const rad = guide + R * 0.075 * Math.pow(v, 0.8) * S.gain;
+    ctx.fillStyle = PC_HUE(pc);
+    ctx.globalAlpha = 0.08 + 0.32 * v;
+    ctx.beginPath(); ctx.arc(x, y, rad * 3.0, 0, 7); ctx.fill();
+    ctx.globalAlpha = 0.35 + 0.65 * v;
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, 7); ctx.fill();
+
+    const [lx, ly] = pos(i, RLAB);
+    ctx.globalAlpha = 0.3 + 0.7 * v;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = `700 ${Math.round(H * 0.024)}px ${SANS}`;
+    ctx.fillText(NOTE[pc], lx, ly);
+  }
+  ctx.globalAlpha = 1;
+
+  // --- hub: the key, from a rolling window ------------------------------
+  const key = detectKey(D, cf, Math.round(6 * D.cfps));
+  ctx.beginPath(); ctx.arc(cx, cy, RNODE * 0.60, 0, 7);
+  ctx.fillStyle = BG; ctx.fill();
+  ctx.strokeStyle = INK; ctx.globalAlpha = 0.10; ctx.lineWidth = 1; ctx.stroke();
+  ctx.globalAlpha = 1;
+  if (key) {
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = PC_HUE(key.root);
+    ctx.globalAlpha = 0.45 + 0.55 * Math.max(0, Math.min(1, key.score));
+    ctx.font = `700 ${Math.round(H * 0.055)}px ${SANS}`;
+    ctx.fillText(NOTE[key.root], cx, cy - H * 0.012);
+    ctx.font = `${Math.round(H * 0.020)}px ${MONO}`;
+    ctx.globalAlpha = 0.5;
+    ctx.fillText(key.mode, cx, cy + H * 0.030);
+  }
+  ctx.globalAlpha = 0.3; ctx.fillStyle = INK;
+  ctx.font = `${Math.round(H * 0.012)}px ${MONO}`;
+  ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText("A N G L E  ·  C I R C L E   O F   F I F T H S", W * 0.012, H * 0.115);
+  ctx.fillText("R A D I U S  ·  N O W → O L D E R", W * 0.012, H * 0.145);
+  ctx.fillText(`T O N A L I T Y  ·  ${(D.tonal[cf] * 100).toFixed(0)}%`, W * 0.012, H * 0.175);
+  ctx.globalAlpha = 1;
+
+  gaugeColumn(ctx, W, H, D, c, S);
+  chrome(ctx, W, H, S, t);
+};
+
+/* ---- quadrants: one wedge per channel, waves travelling outward --------- */
+const QC = [90, 0, -90, 180], QGAP = 5;
+
+LAYOUTS.quadrants = (ctx, W, H, t, D, S) => {
+  const c = Math.round(t * D.fps);
+  const cx = W * 0.40, cy = H * 0.52;
+  const RIN = H * 0.065, ROUT = H * 0.385;
+  const M = Math.round(S.window * 30), K = D.subk;
+  const step = (S.window * D.fps) / M;
+  const amp = 0.13 * (ROUT - RIN) * S.gain;
+  const span = (90 - 2 * QGAP) * Math.PI / 180;
+
+  ctx.strokeStyle = INK; ctx.lineWidth = 1;
+  for (const [r, a] of [[RIN, 0.16], [ROUT, 0.1]]) {
+    ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.stroke();
+  }
+  ctx.globalAlpha = 0.08;
+  for (let d = 45; d < 360; d += 90) {
+    const a = d * Math.PI / 180;
+    ctx.beginPath();
+    ctx.moveTo(cx + RIN * Math.cos(a), cy - RIN * Math.sin(a));
+    ctx.lineTo(cx + ROUT * 1.02 * Math.cos(a), cy - ROUT * 1.02 * Math.sin(a));
+    ctx.stroke();
+  }
+
+  for (let i = 0; i < NL; i++) {
+    const rgb = LANES[i].color, sb = D.sub[i];
+    const lvl = at(D.env[i], c, D.N);
+    const mid = QC[i] * Math.PI / 180;
+    for (let m = 0; m < M; m++) {
+      const fi = Math.round(c - m * step);
+      if (fi < 0 || fi >= D.N) continue;
+      const rho = RIN + (ROUT - RIN) * (m / (M - 1));
+      const fade = Math.pow(1 - 0.96 * (m / (M - 1)), 1.15);
+      const alpha = fade * (0.3 + 0.7 * lvl);
+      if (alpha < 0.004) continue;
+      ctx.beginPath();
+      for (let k = 0; k < K; k++) {
+        const a = mid + span * (k / (K - 1) - 0.5);
+        const r = rho + amp * sb[k * D.N + fi];
+        const x = cx + r * Math.cos(a), y = cy - r * Math.sin(a);
+        k ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = rgb;
+      ctx.globalAlpha = alpha * 0.3; ctx.lineWidth = 3; ctx.stroke();
+      ctx.globalAlpha = alpha;       ctx.lineWidth = 1; ctx.stroke();
+    }
+    const a = mid, lx = cx + (ROUT + H * 0.035) * Math.cos(a),
+          ly = cy - (ROUT + H * 0.035) * Math.sin(a);
+    ctx.globalAlpha = 0.6; ctx.fillStyle = rgb;
+    ctx.textAlign = Math.abs(Math.cos(a)) < 0.5 ? "center" : (Math.cos(a) > 0 ? "left" : "right");
+    ctx.textBaseline = Math.abs(Math.sin(a)) < 0.5 ? "middle" : (Math.sin(a) > 0 ? "bottom" : "top");
+    ctx.font = `700 ${Math.round(H * 0.017)}px ${SANS}`;
+    ctx.fillText(LANES[i].label.split("").join(" "), lx, ly);
+  }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = INK; ctx.globalAlpha = 0.28; ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.font = `${Math.round(H * 0.012)}px ${MONO}`;
+  ctx.fillText("A N G L E  ·  L O W → H I G H   F R E Q", W * 0.012, H * 0.115);
+  ctx.fillText("R A D I U S  ·  N O W → O L D E R", W * 0.012, H * 0.145);
+  ctx.globalAlpha = 1;
+  gaugeColumn(ctx, W, H, D, c, S);
+  chrome(ctx, W, H, S, t);
+};
+
+/* ==========================================================================
+   5. Application
+   ========================================================================== */
+
+const $ = (id) => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d", { alpha: false });
+const audio = new Audio();
+audio.preload = "auto";
+
+let DATA = null, RAF = 0, RECORDER = null, RECCHUNKS = [], ACTX = null, SRCNODE = null;
+
+/* Saving a file: hosted on claude.ai the page has to ask the viewer through
+   the downloads capability — a plain <a download> is inert there. Opened from
+   disk, the anchor is the only route. Try the capability, fall back. */
+let DL = null;
+if (window.claude && typeof window.claude.use === "function") {
+  window.claude.use("downloads").then(d => { DL = d; }).catch(() => {});
+}
+
+async function offerFile(filename, blob) {
+  if (DL) {
+    try {
+      await DL.save({ filename, data: blob });
+      setStatus("Saved " + filename);
+    } catch (e) {
+      const code = e && e.code;
+      if (code === "declined") setStatus("Save cancelled.");
+      else setStatus("Could not save: " + ((e && e.message) || e), true);
+    }
+    return;
+  }
+  const a = document.createElement("a");
+  a.download = filename;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 15000);
+  setStatus("Saved " + filename);
+}
+
+const baseName = () =>
+  (S.title || "render").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+const S = { layout: "lanes", window: 4, gain: 1, tcolor: "lane", title: "" };
+
+function sizeCanvas() {
+  const rect = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.min(1600, Math.round(rect.width * dpr));
+  const h = Math.round(w * 9 / 16);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+}
+
+function draw(t) {
+  sizeCanvas();
+  const W = cv.width, H = cv.height;
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  if (!DATA) return;
+  ctx.lineJoin = "round"; ctx.lineCap = "round";
+  LAYOUTS[S.layout](ctx, W, H, t, DATA, S);
+  // vignette
+  const g = ctx.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);
+  g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.75)");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+function loop() {
+  draw(audio.currentTime);
+  $("seek").value = Math.round(1000 * audio.currentTime / Math.max(audio.duration || 1, 1e-6));
+  $("time").textContent = `${tc(audio.currentTime)} / ${tc(audio.duration || 0)}`;
+  RAF = requestAnimationFrame(loop);
+}
+
+function setStatus(msg, isErr) {
+  const el = $("status"); el.textContent = msg || "";
+  el.className = "status" + (isErr ? " err" : "");
+}
+
+async function load(file) {
+  try {
+    cancelAnimationFrame(RAF);
+    setStatus("Decoding …");
+    $("barwrap").hidden = false; $("bar").style.width = "2%";
+    S.title = file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").toUpperCase();
+
+    const bytes = await file.arrayBuffer();
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await ac.decodeAudioData(bytes.slice(0));
+    ac.close();
+
+    setStatus(`Separating and analysing — ${buf.duration.toFixed(1)}s …`);
+    const t0 = performance.now();
+    DATA = await analyse(buf, (p) => { $("bar").style.width = (5 + 92 * p).toFixed(1) + "%"; });
+    const ms = performance.now() - t0;
+
+    audio.src = URL.createObjectURL(file);
+    await new Promise(r => { audio.onloadedmetadata = r; audio.onerror = r; });
+
+    $("bar").style.width = "100%";
+    setTimeout(() => { $("barwrap").hidden = true; }, 400);
+    setStatus(`Ready — analysed ${buf.duration.toFixed(1)}s in ${(ms / 1000).toFixed(1)}s`);
+    $("drop").classList.add("hide");
+    for (const id of ["play", "seek", "snap", "rec"]) $(id).disabled = false;
+    draw(0);
+    loop();
+  } catch (err) {
+    console.error(err);
+    $("barwrap").hidden = true;
+    setStatus("Could not read that file: " + (err && err.message ? err.message : err), true);
+  }
+}
+
+/* ---- wiring ------------------------------------------------------------- */
+
+const input = document.createElement("input");
+input.type = "file"; input.accept = "audio/*"; input.style.display = "none";
+document.body.appendChild(input);
+input.addEventListener("change", () => { if (input.files[0]) load(input.files[0]); });
+$("pick").addEventListener("click", () => input.click());
+
+const drop = $("drop");
+["dragenter", "dragover"].forEach(e => drop.addEventListener(e, (ev) => {
+  ev.preventDefault(); drop.classList.add("over");
+}));
+["dragleave", "drop"].forEach(e => drop.addEventListener(e, (ev) => {
+  ev.preventDefault(); drop.classList.remove("over");
+}));
+drop.addEventListener("drop", (ev) => {
+  const f = ev.dataTransfer.files[0]; if (f) load(f);
+});
+document.addEventListener("dragover", e => e.preventDefault());
+document.addEventListener("drop", e => {
+  e.preventDefault();
+  if (!DATA && e.dataTransfer.files[0]) load(e.dataTransfer.files[0]);
+});
+
+$("play").addEventListener("click", () => {
+  if (audio.paused) { audio.play(); $("play").textContent = "Pause"; }
+  else { audio.pause(); $("play").textContent = "Play"; }
+});
+audio.addEventListener("ended", () => { $("play").textContent = "Play"; });
+$("seek").addEventListener("input", () => {
+  if (audio.duration) audio.currentTime = audio.duration * $("seek").value / 1000;
+  if (audio.paused) draw(audio.currentTime);
+});
+
+$("layout").addEventListener("change", (e) => { S.layout = e.target.value; draw(audio.currentTime); });
+$("tcolor").addEventListener("change", (e) => { S.tcolor = e.target.value; draw(audio.currentTime); });
+$("win").addEventListener("input", (e) => {
+  S.window = parseFloat(e.target.value);
+  $("winVal").textContent = S.window.toFixed(1) + " s";
+  draw(audio.currentTime);
+});
+$("gain").addEventListener("input", (e) => {
+  S.gain = parseFloat(e.target.value);
+  $("gainVal").textContent = S.gain.toFixed(2);
+  draw(audio.currentTime);
+});
+
+$("snap").addEventListener("click", () => {
+  cv.toBlob((b) => { if (b) offerFile(`${baseName()}_${S.layout}.png`, b); }, "image/png");
+});
+
+$("rec").addEventListener("click", async () => {
+  const btn = $("rec");
+  if (RECORDER) { RECORDER.stop(); return; }
+  if (!window.MediaRecorder || !cv.captureStream) {
+    setStatus("This browser cannot record the canvas.", true); return;
+  }
+  try {
+    if (!ACTX) {
+      ACTX = new (window.AudioContext || window.webkitAudioContext)();
+      SRCNODE = ACTX.createMediaElementSource(audio);
+      SRCNODE.connect(ACTX.destination);
+    }
+    await ACTX.resume();
+    const dest = ACTX.createMediaStreamDestination();
+    SRCNODE.connect(dest);
+    const stream = cv.captureStream(30);
+    dest.stream.getAudioTracks().forEach(tr => stream.addTrack(tr));
+
+    RECCHUNKS = [];
+    RECORDER = new MediaRecorder(stream, { videoBitsPerSecond: 12e6 });
+    RECORDER.ondataavailable = (e) => { if (e.data.size) RECCHUNKS.push(e.data); };
+    RECORDER.onstop = () => {
+      const blob = new Blob(RECCHUNKS, { type: RECORDER.mimeType });
+      RECORDER = null; btn.classList.remove("on"); btn.textContent = "Record video";
+      audio.removeEventListener("ended", stopRec);
+      offerFile(`${baseName()}_${S.layout}.webm`, blob);
+    };
+    const stopRec = () => { if (RECORDER) RECORDER.stop(); };
+    audio.addEventListener("ended", stopRec);
+
+    audio.currentTime = 0;
+    await audio.play();
+    $("play").textContent = "Pause";
+    RECORDER.start();
+    btn.classList.add("on"); btn.textContent = "Stop recording";
+    setStatus("Recording in real time — plays to the end, or press stop.");
+  } catch (err) {
+    setStatus("Recording failed: " + err.message, true);
+    RECORDER = null;
+  }
+});
+
+window.addEventListener("resize", () => draw(audio.currentTime));
+draw(0);
+</script>
