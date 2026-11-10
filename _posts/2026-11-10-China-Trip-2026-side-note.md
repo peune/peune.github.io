@@ -1,7 +1,7 @@
 ---
-title: 
+title: "China Trip 2026 side note"
 date: 2026-11-10
-slug: China Trip 2026 side note
+slug: "China Trip 2026 side note"
 image:
   path: /img/414d9fe0-5bfd-8057-a5b2-efc5af40e4ef_cover.png
   alt: 
