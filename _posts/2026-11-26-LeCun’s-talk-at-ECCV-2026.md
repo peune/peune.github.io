@@ -13,13 +13,13 @@ image:
 
 โดยพื้นฐานเลย EBM คือ model ที่ให้ค่าต่ำเมื่อ input และ output มันเข้ากันได้ดี และให้ค่าสูงเมื่อไม่เข้ากัน เอาจริง ๆ มันก็ให้ความรู้สึกเหมือน loss function ผมเห็น EBM มานานแล้วเลยไม่อินสักที รู้แค่ว่าการเลือก non-probabilistic framework ทำให้ทำงานง่ายขึ้นเพราะไม่ต้องมา normalize  
 
-เท่าที่คุยกับคุณ ChatGPT ดูเหมือนว่าการเปลี่ยนมุมมองจาก prediction function เป็นการวัด compatibility จะทำให้ทำงานได้ยืดหยุ่นขึ้น เช่น ในงาน Concept Learning with Energy-Based Models ของ Modatch จาก OpenAI ที่เห็นคนแชร์มา คือเขาสนใจฟังก์ชัน E_\theta(x,a,w) โดยที่ x เป็น input,  a เป็น attention mask และ  w เป็น latent code สำหรับ concept การใช้ฟังก์ชันเดียวเราสามารถทำได้หลายงาน ตัวอย่างใน paper คือ concept ของ “สี่เหลี่ยม”
+เท่าที่คุยกับคุณ ChatGPT ดูเหมือนว่าการเปลี่ยนมุมมองจาก prediction function เป็นการวัด compatibility จะทำให้ทำงานได้ยืดหยุ่นขึ้น เช่น ในงาน Concept Learning with Energy-Based Models ของ Modatch จาก OpenAI ที่เห็นคนแชร์มา คือเขาสนใจฟังก์ชัน $E_\theta(x,a,w)$ โดยที่ $x$ เป็น input,  $a$ เป็น attention mask และ  $w$ เป็น latent code สำหรับ concept การใช้ฟังก์ชันเดียวเราสามารถทำได้หลายงาน ตัวอย่างใน paper คือ concept ของ “สี่เหลี่ยม”
 
-- Recognition: optimize attention a^* = \arg \min_a E_\theta (x,a,w)  นั่นคือหา subset ของ input ผ่านการปรับ attention mask  หาจุดที่เรียงกันเป็นสี่เหลี่ยม
+- Recognition: optimize attention $a^* = \arg \min_a E_\theta (x,a,w)$  นั่นคือหา subset ของ input ผ่านการปรับ attention mask  หาจุดที่เรียงกันเป็นสี่เหลี่ยม
 
-- Generation: optimize input x^* = \arg \min_x E_\theta (x,a,w) นั่นคือปรับตำแหน่งของจุดเพื่อให้ออกมาเป็นสี่เหลี่ยม 
+- Generation: optimize input $x^* = \arg \min_x E_\theta (x,a,w)$ นั่นคือปรับตำแหน่งของจุดเพื่อให้ออกมาเป็นสี่เหลี่ยม 
 
-- Concept Acquisition: given (x_i,a_i), i=1,.. optimize w^* =\arg \min_w \sum_i E_\theta (x_i,a_i,w)
+- Concept Acquisition: given $(x_i,a_i), i=1,..$ optimize $w^* =\arg \min_w \sum_i E_\theta (x_i,a_i,w)$
 
 ถึง EBM framework มันจะยืดหยุ่นดี แต่ผมก็ยังไม่ซื้อว่ามันดีนะ 555 เลยไปอ่านต่อ เจอว่าจริง ๆ แล้วของที่คุณ LeCun สนใจน่าจะเป็นในรูปล่างนี้ ที่เป็น optimization-based inference มากกว่า  คือระบบแบบนี้มันสามารถใช้ได้กับงานพวก search, planning ได้ด้วย นั่นคือเราไม่ควรสนใจเฉพาะ model ที่บังคับให้ตอบใน shot เดียว แต่ยังไม่เก็ตว่าทำไมแกเรียก EBM 555
 
