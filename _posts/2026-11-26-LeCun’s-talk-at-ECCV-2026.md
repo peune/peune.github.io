@@ -9,19 +9,19 @@ image:
   alt: 
 ---
 
-วันก่อนเห็นหลายคนโพสเรื่องของ LeCun ที่พูดที่ ECCV 2026 ที่สรุป 4 หัวข้อตาม cover image จากนั้นก็เห็นคนโพสเรื่อง Energy-Based Model แต่ดูจะไม่ตรงกับของ LeCun วันนี้เลยมาลองอ่านเพิ่มหน่อย
+วันก่อนเห็นหลายคนโพสเรื่องของ [LeCun ที่พูดที่ ECCV 2026](https://x.com/ylecun/status/2100603076688179553) ที่สรุป 4 หัวข้อตาม cover image จากนั้นก็เห็นคนโพสเรื่อง Energy-Based Model แต่ดูจะไม่ตรงกับของ LeCun วันนี้เลยมาลองอ่านเพิ่มหน่อย
 
 # Energy-Based Model (EBM)
 
 โดยพื้นฐานเลย EBM คือ model ที่ให้ค่าต่ำเมื่อ input และ output มันเข้ากันได้ดี และให้ค่าสูงเมื่อไม่เข้ากัน เอาจริง ๆ มันก็ให้ความรู้สึกเหมือน loss function ผมเห็น EBM มานานแล้วเลยไม่อินสักที รู้แค่ว่าการเลือก non-probabilistic framework ทำให้ทำงานง่ายขึ้นเพราะไม่ต้องมา normalize  
 
-เท่าที่คุยกับคุณ ChatGPT ดูเหมือนว่าการเปลี่ยนมุมมองจาก prediction function เป็นการวัด compatibility จะทำให้ทำงานได้ยืดหยุ่นขึ้น เช่น ในงาน Concept Learning with Energy-Based Models ของ Modatch จาก OpenAI ที่เห็นคนแชร์มา คือเขาสนใจฟังก์ชัน $E_\theta(x,a,w)$ โดยที่ $x$ เป็น input,  $a$ เป็น attention mask และ  $w$ เป็น latent code สำหรับ concept การใช้ฟังก์ชันเดียวเราสามารถทำได้หลายงาน ตัวอย่างใน paper คือ concept ของ “สี่เหลี่ยม”
+เท่าที่คุยกับคุณ ChatGPT ดูเหมือนว่าการเปลี่ยนมุมมองจาก prediction function เป็นการวัด compatibility จะทำให้ทำงานได้ยืดหยุ่นขึ้น เช่น ในงาน Concept Learning with Energy-Based Models ของ Modatch จาก OpenAI ที่เห็นคนแชร์มา คือเขาสนใจฟังก์ชัน $$E_\theta(x,a,w)$$ โดยที่ $$x$$ เป็น input,  $$a$$ เป็น attention mask และ  $$w$$ เป็น latent code สำหรับ concept การใช้ฟังก์ชันเดียวเราสามารถทำได้หลายงาน ตัวอย่างใน paper คือ concept ของ “สี่เหลี่ยม”
 
-- Recognition: optimize attention $a^* = \arg \min_a E_\theta (x,a,w)$  นั่นคือหา subset ของ input ผ่านการปรับ attention mask  หาจุดที่เรียงกันเป็นสี่เหลี่ยม
+- Recognition: optimize attention $$a^* = \arg \min_a E_\theta (x,a,w)$$  นั่นคือหา subset ของ input ผ่านการปรับ attention mask  หาจุดที่เรียงกันเป็นสี่เหลี่ยม
 
-- Generation: optimize input $x^* = \arg \min_x E_\theta (x,a,w)$ นั่นคือปรับตำแหน่งของจุดเพื่อให้ออกมาเป็นสี่เหลี่ยม 
+- Generation: optimize input $$x^* = \arg \min_x E_\theta (x,a,w)$$ นั่นคือปรับตำแหน่งของจุดเพื่อให้ออกมาเป็นสี่เหลี่ยม 
 
-- Concept Acquisition: given $(x_i,a_i), i=1,..$ optimize $w^* =\arg \min_w \sum_i E_\theta (x_i,a_i,w)$
+- Concept Acquisition: given $$(x_i,a_i), i=1,..$$ optimize $$w^* =\arg \min_w \sum_i E_\theta (x_i,a_i,w)$$
 
 ถึง EBM framework มันจะยืดหยุ่นดี แต่ผมก็ยังไม่ซื้อว่ามันดีนะ 555 เลยไปอ่านต่อ เจอว่าจริง ๆ แล้วของที่คุณ LeCun สนใจน่าจะเป็นในรูปล่างนี้ ที่เป็น optimization-based inference มากกว่า  คือระบบแบบนี้มันสามารถใช้ได้กับงานพวก search, planning ได้ด้วย นั่นคือเราไม่ควรสนใจเฉพาะ model ที่บังคับให้ตอบใน shot เดียว แต่ยังไม่เก็ตว่าทำไมแกเรียก EBM 555
 
@@ -63,7 +63,7 @@ image:
 
 อันนี้เป็นการแบ่งงานเฉย ๆ นั่นคือทั้งหมดนี้อาจเกิดใน NN ก้อนเดียวก็ได้
 
-ยังมีงานเกี่ยวกับ World Model อีกหลายงาน ดู ๆ แล้วนิยามยังไม่ค่อยตรงกันเลย 555 ตัวอย่างเช่นงานของคู่กัดคุณ LeCun คือ Schmidhuber (Ha กับ Schmidhuber, NIPS 2018) ที่ใช้ VAE ในการ encode vision, ใช้ LSTM ในการทำนายว่า observation จะเปลี่ยนไปแบบไหน (ทำงานบน observation เหมือน LeCun) และมี Controller ในการเลือก action ของที่น่าสนใจคือเราสามารถ train Controller บน “ฝัน” หรือ sequence ที่ gen จาก LSTM ได้ด้วย และ Controller ที่ได้ทำงานจริงได้ดี 
+ยังมีงานเกี่ยวกับ World Model อีกหลายงาน ดู ๆ แล้วนิยามยังไม่ค่อยตรงกันเลย 555 ตัวอย่างเช่นงานของคู่กัดคุณ LeCun คือ Schmidhuber ([Ha กับ Schmidhuber, NIPS 2018](https://worldmodels.github.io/)) ที่ใช้ VAE ในการ encode vision, ใช้ LSTM ในการทำนายว่า observation จะเปลี่ยนไปแบบไหน (ทำงานบน observation เหมือน LeCun) และมี Controller ในการเลือก action ของที่น่าสนใจคือเราสามารถ train Controller บน “ฝัน” หรือ sequence ที่ gen จาก LSTM ได้ด้วย และ Controller ที่ได้ทำงานจริงได้ดี 
 
 ดู ๆ แล้ว LSTM ในงานนี้ก็คงเป็น World Model แบบหนึ่งนั่นเอง ถึง World Model ในงานนี้จะ pretrain และ freeze แต่ก็น่าจะปรับเป็น adaptive แบบของ LeCun ได้แหละ สิ่งที่ต่างจากงานของ LeCun จริง ๆ อาจจะอยู่ที่ Controller ซึ่งใน paper นี้มัน fix กับงานที่เขาทำ แต่ของ LeCun หลาย ๆ งานดูจะสนใจการ reuse World Model บนงานใหม่ด้วย นั่นคือทำการแยก task-agnostic dynamic learning ของ World Model และการ train Policy ของงานต่าง ๆ   ออกจากกัน
 
