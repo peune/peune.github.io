@@ -1,7 +1,9 @@
 ---
-title: "LeCun’s talk at ECCV 2026"
+title: "LeCun talk at ECCV 2026"
 date: 2026-11-26
-slug: "LeCun’s talk at ECCV 2026"
+slug: "LeCun talk at ECCV 2026"
+categories: [research]
+tags: [World Model]
 image:
   path: /img/424d9fe0-5bfd-80f3-b274-eacdd0aaaa6a_cover.png
   alt: 
