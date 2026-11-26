@@ -1,7 +1,7 @@
 ---
-title: 
+title: "LeCun’s talk at ECCV 2026"
 date: 2026-11-26
-slug: LeCun’s talk at ECCV 2026
+slug: "LeCun’s talk at ECCV 2026"
 image:
   path: /img/424d9fe0-5bfd-80f3-b274-eacdd0aaaa6a_cover.png
   alt: 
@@ -22,6 +22,8 @@ image:
 - Concept Acquisition: given (x_i,a_i), i=1,.. optimize w^* =\arg \min_w \sum_i E_\theta (x_i,a_i,w)
 
 ถึง EBM framework มันจะยืดหยุ่นดี แต่ผมก็ยังไม่ซื้อว่ามันดีนะ 555 เลยไปอ่านต่อ เจอว่าจริง ๆ แล้วของที่คุณ LeCun สนใจน่าจะเป็นในรูปล่างนี้ ที่เป็น optimization-based inference มากกว่า  คือระบบแบบนี้มันสามารถใช้ได้กับงานพวก search, planning ได้ด้วย นั่นคือเราไม่ควรสนใจเฉพาะ model ที่บังคับให้ตอบใน shot เดียว แต่ยังไม่เก็ตว่าทำไมแกเรียก EBM 555
+
+![optbasedinference](/img/lecun20261126fig1.png)
 
 จริง ๆ ใน slides ยังมีพวก hierarchical prediction ด้วย ซึ่งดูเข้ากับ optimization-based inference แต่ก็ยังดูไม่เข้ากับ EBM
 
